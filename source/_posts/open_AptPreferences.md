@@ -4,11 +4,9 @@ subtitle:   "面向对象快速持久化框架"
 date: 2016-07-19 21:15:09
 author:     "Wiki"
 tags:
-    - Android
+    - 我的开源项目
+
 ---
-
-
-[![Release](https://jitpack.io/v/joyrun/AptPreferences.svg)](https://jitpack.io/#joyrun/AptPreferences)
 
 AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePreferences的使用，减少代码的编写。可以非常快速地保存基本类型和对象。AptPreferences是基于APT技术实现，在编译期间实现代码的生成，支持混淆。根据不同的用户区分持久化信息。
 
@@ -18,7 +16,7 @@ AptPreferences是基于面向对象设计的快速持久化框架，目的是为
 3. 支持根据不同的用户区分持久化信息。
 
 ### 简单例子
-```
+```java
 @AptPreferences
 public class Settings {
    private long loginTime;
@@ -27,7 +25,7 @@ public class Settings {
 }
 ```
 
-```
+```java
 // 保存信息
 SettingsPreference.get().setLoginTime(System.currentTimeMillis());
 SettingsPreference.get().set(new LoginUser("Wiki"));
@@ -36,7 +34,10 @@ long loginTime = SettingsPreference.get().getLoginTime();
 LoginUser loginUser = SettingsPreference.get().getLoginUser();
 ```
 ### 项目地址
+[![Release](https://jitpack.io/v/joyrun/AptPreferences.svg)](https://jitpack.io/#joyrun/AptPreferences)
+
 https://github.com/joyrun/AptPreferences
+
 ### 一、配置项目
 
 ##### 配置项目根目录 build.gradle
@@ -74,7 +75,7 @@ dependencies {
 
 使用方法非常简单，先编写一个普通带getter、setter的javabean类，在类头部添加@AptPreferences即可：
 
-```
+```java
 
 @AptPreferences
 public class Settings {
@@ -95,7 +96,6 @@ public class Settings {
 
     // get、set方法必须写
 }
-
 ```
 
 
@@ -124,7 +124,7 @@ AptField有三个参数可以配置。
 
 使用之前要进行初始化，建议在Application进行初始化，需要需要保存对象，还需要实现对象的解析器，这里使用Fastjson作为实例：
 
-```
+```java
 
 public class MyApplication extends Application{
    @Override
@@ -142,7 +142,6 @@ public class MyApplication extends Application{
        });
    }
 }
-
 ```
 
 
@@ -151,7 +150,7 @@ public class MyApplication extends Application{
 
 ### 五、获取持久化对象
 
-```
+```java
 
 // 提供一个默认的获取方法
 
@@ -160,12 +159,11 @@ SettingsPreferences settingsPreference = SettingsPreferences.get("name");
 // 可以根据不用的用户名称获取
 
 SettingsPreferences settingsPreference = SettingsPreferences.get("name");
-
 ```
 
 ### 六、代码调用
 
-```
+```java
 
 // 普通类型保存
 settingsPreference.setUseLanguage("zh");
@@ -189,18 +187,17 @@ boolean openPush = settingsPreference.getPush().isOpenPush();
 
 很多时候我们需要在没有获取到值时使用默认值，SharedPreferences本身也是具备默认值的，所以我们也是支持默认值配置。分析生成的代码可以看到：
 
-```
+```java
 
 @Override
 public long getLastOpenAppTimeMillis() {
    return mPreferences.getLong("lastOpenAppTimeMillis", super.getLastOpenAppTimeMillis());
 }
-
 ```
 
 如果没有获取到值，会调用父类的方法，那么就可以通过这个方式配置默认值：
 
-```
+```java
 
 @AptPreferences
 public class Settings {
@@ -211,14 +208,13 @@ public class Settings {
    // ...
 
 }
-
 ```
 
 
 
 ### 八、详细转换代码
 
-```
+```java
 
 @AptPreferences
 public class Settings {
@@ -304,14 +300,13 @@ public class Settings {
        }
    }
 }
-
 ```
 
 实际上就是根据上面的代码自动生成带有持久化的代码，可以在这里可以找到
 
 > app/build/generated/source/apt/debug
 
-```
+```java
 
 public final class SettingsPreferences extends Settings {
    public static final Map<String, SettingsPreferences> sMap = new java.util.HashMap<>();

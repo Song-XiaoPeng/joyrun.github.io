@@ -3,7 +3,7 @@ title: "ActivityRouter路由框架：通过注解实现URL打开Activity"
 date: 2016-08-01 23:03:24
 author:     "Wiki"
 tags:
-    - Android
+    - 我的开源项目
 ---
 
 通过注解方式来实现URL打开Activity功能，并支持在WebView和外部浏览器使用，支持多级Activity跳转，支持Bundle、Uri参数注入并转换参数类型。

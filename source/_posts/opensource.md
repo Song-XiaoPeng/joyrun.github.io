@@ -3,8 +3,8 @@ title: 如何优雅地发布一个Android、Java开源项目
 date: 2016-07-21 00:22:52
 author:     "Wiki"
 tags:
-     - Android
-     - Java
+     - 其它
+
 ---
 
 

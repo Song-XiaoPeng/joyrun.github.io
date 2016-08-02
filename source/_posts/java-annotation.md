@@ -5,7 +5,6 @@ date:       2016-07-18
 author:     "Wiki"
 tags:
     - Java
-    - Android
 ---
 
 

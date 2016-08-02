@@ -4,8 +4,7 @@ title:      "如何利用github创建博客"
 date:       2016-07-21 14:22:52
 author:     "Wiki"
 tags:
-    - Java
-    - Android
+    - 其它
 ---
 
 
