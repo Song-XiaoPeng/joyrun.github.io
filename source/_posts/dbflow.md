@@ -8,7 +8,7 @@ tags:
 
 DBFlow，综合了 ActiveAndroid, Schematic, Ollie,Sprinkles 等库的优点。同时不是基于反射，所以性能也是非常高，效率紧跟greenDAO其后。基于注解，使用apt技术，在编译过程中生成操作类，使用方式和ActiveAndroid高度相似，使用简单。
 
-##### 特性：
+##### 特点：
 1. 无缝支持多个数据库；
 2. 使用annotation processing提高速度；
 3. ModelContainer类库可以直接解析像JSON这样的数据；

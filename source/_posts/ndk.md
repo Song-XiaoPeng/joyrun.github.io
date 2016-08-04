@@ -1,12 +1,12 @@
 ---
-title: "C/C++在Java项目、Android和iOS三大平台下实现混合编程"
+title: "C/C++在Java项目、Android和Objective-C三大平台下实现混合编程"
 date: 2016-08-02 13:45:07
 author:     "Wiki"
 tags:
     - Android Native & C++
 ---
 
-Android NDK 是在SDK前面又加上了“原生”二字，即Native Development Kit，因此又被Google称为“NDK”。本文从亲身实战的角度出发，讲解C/C++在Android和iOS上的应用。
+Android和iOS开发都支持C++开发，可以一套代码多平台使用。同时C++难以反编译的特性也可以为Android开发带来代码的保密，另一native特性也可以提高代码的运行效率。
 
 ### 一、为什么使用C/C++
 
@@ -26,7 +26,7 @@ Android NDK 是在SDK前面又加上了“原生”二字，即Native Developmen
 
 ### 三、第一行代码
 
-#### 1. 如何在OBJECTIVE-C项目中使用C++；
+#### 1. 如何在Objective-C项目中使用C++；
 
 在Objective-C使用C/C++非常简单，仅仅需要把.m后缀的文件改成.mm即可使用C++，我们通常不会把.mm的文件写到整个项目都有，而是设计一个接口，用来做两个语言之间的桥梁，他们之间的交互仅仅在这个接口。
 
@@ -135,9 +135,9 @@ JNIEXPORT void JNICALL Java_cn_taoweiji_nativemodule_NativeDemo_nativeToJava(JNI
 }
 ```
 
-##### 第五步：编译生成JNI文件，按  ⌘+B.
+##### 第五步：编译生成JNI文件，按  ⌘+B (Product -> Build).
 
-
+编译后文件
 ![image](4.jpg)
 
 根据自己的电脑环境，查找编译后的文件，我的路径是
@@ -531,6 +531,6 @@ delete demos;
 
 ##### 相关源代码：
 - Android： https://github.com/taoweiji/DEMO_NDK
-- iOS： https://github.com/taoweiji/DEMO_CPP_OC
-- MAC： https://github.com/taoweiji/DEMO_MAC_JNI
+- Objective-C： https://github.com/taoweiji/DEMO_CPP_OC
+- MAC-JNI： https://github.com/taoweiji/DEMO_MAC_JNI
 
