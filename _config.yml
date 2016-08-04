@@ -50,7 +50,7 @@ duoshuo_share: true                     # set to false if you want to use Commen
 
 # Analytics settings
 # Baidu Analytics
-ba_track_id: e9db2b5ffa4203a7112b8e9c118b606a
+ba_track_id: a6affd6cc8513aa057d6bc8d1b269a2e
 # Google Analytics
 # ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
 # ga_domain: joyrun.github.io
