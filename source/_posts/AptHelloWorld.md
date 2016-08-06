@@ -262,15 +262,33 @@ public final class DIMainActivity extends MainActivity {
  }
 }
 ```
+### 常用方法
+
+##### 常用Element子类
+1. TypeElement：类
+2. ExecutableElement：成员方法
+3. VariableElement：成员变量
+
+##### 通过包名和类名获取TypeName
+TypeName targetClassName = ClassName.get("PackageName", "ClassName");
+
+##### 通过Element获取TypeName
+TypeName type = TypeName.get(element.asType());
+
+##### 获取TypeElement的包名
+String packageName = processingEnv.getElementUtils().getPackageOf(type).getQualifiedName().toString();
+
+##### 获取TypeElement的所有成员变量和成员方法
+List<? extends Element> members = processingEnv.getElementUtils().getAllMembers(typeElement);
 
 
 ### 总结
  推荐阅读dagger2、dbflow、ButterKnife等基于apt的开源项目代码。[JavaPoet](https://github.com/square/javapoet) 也有很多例子可以学习。
 
-##### 上面Example的代码放在github
+#### Example代码
 https://github.com/taoweiji/DemoAPT
 
-### 我们的项目推荐：
+### 我们的开源项目推荐：
 #### Android快速持久化框架：AptPreferences
 AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePreferences的使用，减少代码的编写。可以非常快速地保存基本类型和对象。AptPreferences是基于APT技术实现，在编译期间实现代码的生成，根据不同的用户区分持久化信息。
 

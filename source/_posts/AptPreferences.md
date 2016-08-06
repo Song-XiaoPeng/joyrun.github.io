@@ -16,7 +16,8 @@ AptPreferences是基于面向对象设计的快速持久化框架，目的是为
 3. 支持根据不同的用户区分持久化信息。
 
 ### 简单例子
-```java
+##### 定义javabean类
+```
 @AptPreferences
 public class Settings {
    private long loginTime;
@@ -24,8 +25,10 @@ public class Settings {
     // get、set方法
 }
 ```
-
-```java
+##### 使用方式
+```
+//初始化
+AptPreferencesManager.init(this, null);
 // 保存信息
 SettingsPreference.get().setLoginTime(System.currentTimeMillis());
 SettingsPreference.get().set(new LoginUser("Wiki"));
@@ -33,11 +36,9 @@ SettingsPreference.get().set(new LoginUser("Wiki"));
 long loginTime = SettingsPreference.get().getLoginTime();
 LoginUser loginUser = SettingsPreference.get().getLoginUser();
 ```
+从上面的简单例子可以看到，我们需要做SharePreferences持久化，仅仅定义一个简单的javabean类（Settings）并添加注解即可，这个框架会根据javabean生成带有持久化功能的SettingsPreference类，通过这个类就可以非常简单去保持或者获取数据，大大简化了SharePreferences的使用，也可以保持对象。
 ### 项目地址
-[![Release](https://jitpack.io/v/joyrun/AptPreferences.svg)](https://jitpack.io/#joyrun/AptPreferences)
-
 https://github.com/joyrun/AptPreferences
-
 ### 一、配置项目
 
 ##### 配置项目根目录 build.gradle
@@ -66,8 +67,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 //...
 dependencies {
-    compile 'com.github.joyrun.AptPreferences:aptpreferences:0.2.3'
-    apt 'com.github.joyrun.AptPreferences:aptpreferences-compiler:0.2.3'
+    compile 'com.github.joyrun.AptPreferences:aptpreferences:0.4.4'
+    apt 'com.github.joyrun.AptPreferences:aptpreferences-compiler:0.4.4'
 }
 ```
 
@@ -75,7 +76,7 @@ dependencies {
 
 使用方法非常简单，先编写一个普通带getter、setter的javabean类，在类头部添加@AptPreferences即可：
 
-```java
+```
 
 @AptPreferences
 public class Settings {
@@ -96,6 +97,7 @@ public class Settings {
 
     // get、set方法必须写
 }
+
 ```
 
 
@@ -117,14 +119,14 @@ AptField有三个参数可以配置。
 2. save：用来声明是否需要持久化这个字段。
 
 3. preferences：这个属性仅仅适用于对象类型的字段，用来声明这个是以对象的方式保存，还是以preferences的方式保存。如果是true，就可以通过settingsPreference.getPush().isOpenPush()的方式存取。
-
+4. global：默认是true，如果设置为false时，和AptPreferencesManager.setUserInfo()配合，可以为不同的用户进行持久化，达到每个用户有不用的设置。
 
 
 ### 四、初始化
 
 使用之前要进行初始化，建议在Application进行初始化，需要需要保存对象，还需要实现对象的解析器，这里使用Fastjson作为实例：
 
-```java
+```
 
 public class MyApplication extends Application{
    @Override
@@ -142,39 +144,33 @@ public class MyApplication extends Application{
        });
    }
 }
+
 ```
 
 
 
 
 
-### 五、获取持久化对象
-
-```java
-
-// 提供一个默认的获取方法
-
-SettingsPreferences settingsPreference = SettingsPreferences.get("name");
-
-// 可以根据不用的用户名称获取
-
-SettingsPreferences settingsPreference = SettingsPreferences.get("name");
+### 五、根据不同的用户设置
+如果app支持多用户登录，需要根据不用的用户持久化，可以通过下面方法配置。再通过@AptField(global = false)，就可以针对某个字段跟随用户不同进行持久化。
+```
+AptPreferencesManager.setUserInfo("uid");
 ```
 
 ### 六、代码调用
 
-```java
+```
 
 // 普通类型保存
-settingsPreference.setUseLanguage("zh");
-settingsPreference.setLastOpenAppTimeMillis(System.currentTimeMillis());
+SettingsPreferences.get().setUseLanguage("zh");
+SettingsPreferences.get().setLastOpenAppTimeMillis(System.currentTimeMillis());
 // 对象类型保存
 Settings.LoginUser loginUser = new Settings.LoginUser();
 loginUser.setUsername("username");
 loginUser.setPassword("password");
-settingsPreference.setLoginUser(loginUser);
+SettingsPreferences.get().setLoginUser(loginUser);
 // 对象类型带 @AptField(preferences = true) 注解的保存，相当于把 push相关的放在一个分类
-settingsPreference.getPush().setOpenPush(true);
+SettingsPreferences.get().getPush().setOpenPush(true);
 
 
 // 获取
@@ -187,17 +183,18 @@ boolean openPush = settingsPreference.getPush().isOpenPush();
 
 很多时候我们需要在没有获取到值时使用默认值，SharedPreferences本身也是具备默认值的，所以我们也是支持默认值配置。分析生成的代码可以看到：
 
-```java
+```
 
 @Override
 public long getLastOpenAppTimeMillis() {
    return mPreferences.getLong("lastOpenAppTimeMillis", super.getLastOpenAppTimeMillis());
 }
+
 ```
 
 如果没有获取到值，会调用父类的方法，那么就可以通过这个方式配置默认值：
 
-```java
+```
 
 @AptPreferences
 public class Settings {
@@ -208,13 +205,14 @@ public class Settings {
    // ...
 
 }
+
 ```
 
 
 
 ### 八、详细转换代码
 
-```java
+```
 
 @AptPreferences
 public class Settings {
@@ -300,13 +298,14 @@ public class Settings {
        }
    }
 }
+
 ```
 
 实际上就是根据上面的代码自动生成带有持久化的代码，可以在这里可以找到
 
 > app/build/generated/source/apt/debug
 
-```java
+```
 
 public final class SettingsPreferences extends Settings {
    public static final Map<String, SettingsPreferences> sMap = new java.util.HashMap<>();
@@ -404,4 +403,3 @@ public final class SettingsPreferences extends Settings {
    }
 }
 ```
-
