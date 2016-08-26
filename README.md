@@ -1,45 +1,19 @@
-#Hexo-Theme-Huxblog
+## 开源项目
 
-> Ported Theme of [Hux Blog](https://github.com/Huxpro/huxpro.github.io), Thank [Huxpro](https://github.com/Huxpro) for designing such a flawless theme.
+#### Android快速持久化框架：AptPreferences
 
-###[Demo &rarr;](http://kaijun.rocks/hexo-theme-huxblog/)
+AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePreferences的使用，减少代码的编写。可以非常快速地保存基本类型和对象。AptPreferences是基于APT技术实现，在编译期间实现代码的生成，支持混淆。根据不同的用户区分持久化信息。
 
+https://github.com/joyrun/AptPrefences
 
-![](http://huangxuan.me/img/blog-desktop.jpg)
+#### Activity路由框架：ActivityRouter
 
-## Usage
+通过注解实现URL打开Activity，并支持在WebView和外部浏览器使用，支持多级Activity跳转，支持Bundle、Uri参数注入并转换参数类型。
 
-I didn't publish it as a single theme folder because a few of the pages are added and modified manually, so you should manually create some extra folders in `scaffolds` for the new pages and modify the `_config.yml` if you only have the single theme folder.
+https://github.com/joyrun/ActivityRouter
 
-So i just pushed the whole hexo project for your convenience, all pre settings and boilerplates are included, have a look and go ahead customizing your own blog!
+#### PullUpSwipeRefreshLayout
 
-##### 1.Init
+支持上拉刷新、Emptyview的SwipeRefreshLayout
 
-```
-git clone https://github.com/Kaijun/hexo-theme-huxblog.git
-cd hexo-theme-huxblog
-npm install
-```
-
-##### 2.Modify
-Modify `_config.yml` file with your own info.
-Especially the section:
-
-```
-deploy:
-  type: git
-  repo: https://github.com/Kaijun/hexo-theme-huxblog
-  branch: gh-pages
-```
-Replace with your own repo!
-
-##### 3.Writting/Serve/Deploy
-
-```
-hexo new post IMAPOST
-hexo serve // run hexo in local environment
-hexo clean && hexo deploy // hexo will push the static files automatically into the specifig branch(gh-pages) of your repo!
-```
-
-##### 4.Enjoy! 
-Please [**Star**](https://github.com/kaijun/hexo-theme-huxblog/stargazers) this Project if you like it! [**Following**](https://github.com/Kaijun) would also be appreciated!
+https://github.com/joyrun/PullUpSwipeRefreshLayout
