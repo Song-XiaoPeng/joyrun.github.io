@@ -67,19 +67,55 @@ Android的SDK带有两个混淆规则文件，proguard-android.txt和proguard-an
 
 ```
 -keepclassmembers class com.app.MainActivity {
-	void set*(***);
+	void setHeight(***);
 }
 ```
 
-### 避免注解被混淆
+##### 避免注解被混淆
 
-我们在使用反射同时也常用注解，比如EventBus 8.0之前的版本，
+EventBus3.0之后的版本是通过注解来注册接收者，那么这些类也是不应该被混淆的。
 
-
+```
+#避免所有的注解被混淆
+-keep interface * extends java.lang.annotation.Annotation { *; }
+#避免带有@Subscribe注解的方法被混淆
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}
+```
 
 ### 通过注解@Keep避免被混淆
 
-我们查看proguard-android.txt和proguard-android-optimize.txt可以发现，默认的混淆规则中包含了
+我们查看proguard-android.txt和proguard-android-optimize.txt可以发现，默认的混淆规则中包含了@Keep，那么我们就可以通过注解的方式，避免某个类，某个方法或者某个字段被混淆，无需一一在规则文件指定，比如上面的属性动画方法就可以通过@Keep来避免被混淆。
+
+WebChromeClient类内的方法都是不建议混淆的
+
+```
+@Keep
+public class MyWebChromeClient extends WebChromeClient{
+  ...
+}
+```
+
+WebView的JavascriptInterface也是不能被混淆的
+
+```
+public class MyJavascriptInterface{
+  @Keep
+  @android.webkit.JavascriptInterface
+  public void onShare(String json) {
+    ...
+  }
+}
+```
+
+
+
+
 
 
 
@@ -104,6 +140,23 @@ optimize可以对代码进行优化，删除无用的代码，甚至可以按照
     public static *** e(...);
 }
 ```
+
+##### Gradle配置
+
+通过Android Studio创建一个项目就会默认生成了混淆对应的配置，只是默认是关闭的，需要设置minifyEnabled=true才能生效，其中的proguardFiles是一个数组的函数，支持多个混淆规则文件，其中proguard-android.txt是默认的，推荐使用。我们只要修改module根目录的proguard-rules.pro来增加混淆规则，当前，我们还可以增加多几个这样的问题。比如上述的`过滤Log日志`可以放在单独的文件中，仅仅对发布版本使用，而我们发布的内测版本还是打开log。
+
+```
+buildTypes {
+    release {
+        minifyEnabled true
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro','proguard-rules-nolog.pro'
+        }
+    }
+```
+
+applymapping使用旧的Mapping规则
+
+
 
 
 
