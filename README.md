@@ -4,7 +4,7 @@
 
 AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePreferences的使用，减少代码的编写。可以非常快速地保存基本类型和对象。AptPreferences是基于APT技术实现，在编译期间实现代码的生成，支持混淆。根据不同的用户区分持久化信息。
 
-https://github.com/joyrun/AptPrefences
+https://github.com/joyrun/AptPreferences
 
 #### Activity路由框架：ActivityRouter
 
