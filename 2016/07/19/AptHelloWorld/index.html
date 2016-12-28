@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Android APT（编译时代码生成）最佳实践 - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/07/19/AptHelloWorld/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('post-bg-2015.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                    </div>
+                    <h1>Android APT（编译时代码生成）最佳实践</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Wiki on
+                        2016-07-19
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>越来越多第三方库使用apt技术，如<a href="https://github.com/Raizlabs/DBFlow" target="_blank" rel="external">DBflow</a>、<a href="https://github.com/google/dagger" target="_blank" rel="external">Dagger2</a>、<a href="https://github.com/JakeWharton/butterknife" target="_blank" rel="external">ButterKnife</a>、<a href="https://github.com/joyrun/ActivityRouter" target="_blank" rel="external">ActivityRouter</a>、<a href="https://github.com/joyrun/AptPreferences" target="_blank" rel="external">AptPreferences</a>。在编译时根据Annotation生成了相关的代码，非常高大上但是也非常简单的技术，可以给开发带来了很大的便利。</p>
+<h2 id="Annotation"><a href="#Annotation" class="headerlink" title="Annotation"></a>Annotation</h2><p>如果想学习APT，那么就必须先了解Annotation的基础，这里附加我另外一篇文章的地址：<a href="http://www.taoweiji.cn/2016/07/18/java-annotation" target="_blank" rel="external">http://www.taoweiji.cn/2016/07/18/java-annotation</a></p>
+<h2 id="APT"><a href="#APT" class="headerlink" title="APT"></a>APT</h2><p>APT(Annotation Processing Tool)是一种处理注释的工具,它对源代码文件进行检测找出其中的Annotation，使用Annotation进行额外的处理。<br>      Annotation处理器在处理Annotation时可以根据源文件中的Annotation生成额外的源文件和其它的文件(文件具体内容由Annotation处理器的编写者决定),APT还会编译生成的源文件和原来的源文件，将它们一起生成class文件。</p>
+<h3 id="创建Annotation-Module"><a href="#创建Annotation-Module" class="headerlink" title="创建Annotation Module"></a>创建Annotation Module</h3><p>首先，我们需要新建一个名称为annotation的Java Library，主要放置一些项目中需要使用到的Annotation和关联代码。这里简单自定义了一个注解：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Target(ElementType.TYPE)</div><div class="line">@Retention(RetentionPolicy.CLASS) </div><div class="line">public @interface Test &#123;   &#125;</div></pre></td></tr></table></figure></p>
+<h5 id="配置build-gradle，主要是规定jdk版本"><a href="#配置build-gradle，主要是规定jdk版本" class="headerlink" title="配置build.gradle，主要是规定jdk版本"></a>配置build.gradle，主要是规定jdk版本</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">apply plugin: &apos;java&apos;</div><div class="line">sourceCompatibility = 1.7 </div><div class="line">targetCompatibility = 1.7 </div><div class="line">dependencies &#123;</div><div class="line">    compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="创建Compiler-Module"><a href="#创建Compiler-Module" class="headerlink" title="创建Compiler Module"></a>创建Compiler Module</h3><p>创建一个名为compiler的Java Library，这个类将会写代码生成的相关代码。核心就是在这里。</p>
+<h5 id="配置build-gradle"><a href="#配置build-gradle" class="headerlink" title="配置build.gradle"></a>配置build.gradle</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">apply plugin: &apos;java&apos;</div><div class="line">sourceCompatibility = 1.7 </div><div class="line">targetCompatibility = 1.7 </div><div class="line">dependencies &#123;</div><div class="line">    compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])</div><div class="line">    compile &apos;com.google.auto.service:auto-service:1.0-rc2&apos;</div><div class="line">    compile &apos;com.squareup:javapoet:1.7.0&apos;</div><div class="line">    compile project(&apos;:annotation&apos;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>定义编译的jdk版本为1.7，这个很重要，不写会报错。</li>
+<li>AutoService 主要的作用是注解 processor 类，并对其生成 META-INF 的配置信息。</li>
+<li>JavaPoet 这个库的主要作用就是帮助我们通过类调用的形式来生成代码。</li>
+<li>依赖上面创建的annotation Module。<h4 id="定义Processor类"><a href="#定义Processor类" class="headerlink" title="定义Processor类"></a>定义Processor类</h4>生成代码相关的逻辑就放在这里。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@AutoService(Processor.class)</div><div class="line">public class TestProcessor extends AbstractProcessor &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Set&lt;String&gt; getSupportedAnnotationTypes() &#123;</div><div class="line">        return Collections.singleton(Test.class.getCanonicalName());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnv) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="生成第一个类"><a href="#生成第一个类" class="headerlink" title="生成第一个类"></a>生成第一个类</h5><p>我们接下来要生成下面这个HelloWorld的代码：<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">package com.example.helloworld;</div><div class="line"></div><div class="line">public final class HelloWorld &#123;</div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">    System.out.println(&quot;Hello, JavaPoet!&quot;);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>修改上述TestProcessor的process方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override    </div><div class="line">public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnv) &#123;</div><div class="line">   MethodSpec main = MethodSpec.methodBuilder(&quot;main&quot;)</div><div class="line">           .addModifiers(Modifier.PUBLIC, Modifier.STATIC)</div><div class="line">           .returns(void.class)</div><div class="line">           .addParameter(String[].class, &quot;args&quot;)</div><div class="line">           .addStatement(&quot;$T.out.println($S)&quot;, System.class, &quot;Hello, JavaPoet!&quot;)</div><div class="line">           .build();</div><div class="line">   TypeSpec helloWorld = TypeSpec.classBuilder(&quot;HelloWorld&quot;)</div><div class="line">           .addModifiers(Modifier.PUBLIC, Modifier.FINAL)</div><div class="line">           .addMethod(main)</div><div class="line">           .build();</div><div class="line">   JavaFile javaFile = JavaFile.builder(&quot;com.example.helloworld&quot;, helloWorld)</div><div class="line">           .build();</div><div class="line">   try &#123;</div><div class="line">       javaFile.writeTo(processingEnv.getFiler());</div><div class="line">   &#125; catch (IOException e) &#123;</div><div class="line">       e.printStackTrace();</div><div class="line">   &#125;</div><div class="line">   return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="在app中使用"><a href="#在app中使用" class="headerlink" title="在app中使用"></a>在app中使用</h3><h5 id="配置项目根目录的build-gradle"><a href="#配置项目根目录的build-gradle" class="headerlink" title="配置项目根目录的build.gradle"></a>配置项目根目录的build.gradle</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">    classpath &apos;com.neenbedankt.gradle.plugins:android-apt:1.8&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="配置app的build-gradle"><a href="#配置app的build-gradle" class="headerlink" title="配置app的build.gradle"></a>配置app的build.gradle</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">apply plugin: &apos;com.android.application&apos;</div><div class="line">apply plugin: &apos;com.neenbedankt.android-apt&apos;</div><div class="line">//...</div><div class="line">dependencies &#123;</div><div class="line">    //..</div><div class="line">    compile project(&apos;:annotation&apos;)</div><div class="line">    apt project(&apos;:compiler&apos;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="编译使用"><a href="#编译使用" class="headerlink" title="编译使用"></a>编译使用</h5><p>在随意一个类添加@Test注解<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Test</div><div class="line">public class MainActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">       super.onCreate(savedInstanceState);</div><div class="line">       setContentView(R.layout.activity_main);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>点击Android Studio的ReBuild Project，可以在在app的 <code>build/generated/source/apt</code>目录下，即可看到生成的代码。</p>
+<h3 id="基于注解的View注入：DIActivity"><a href="#基于注解的View注入：DIActivity" class="headerlink" title="基于注解的View注入：DIActivity"></a>基于注解的View注入：DIActivity</h3><p>到目前我们还没有使用注解，上面的@Test也没有实际用上，下面我们做一些更加实际的代码生成。实现基于注解的View，代替项目中的<code>findByView</code>。这里仅仅是学习怎么用APT，如果真的想用DI框架，推荐使用ButterKnife，功能全面。</p>
+<ol>
+<li>第一步，在annotation module创建@DIActivity、@DIView注解。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Target(ElementType.TYPE)</div><div class="line">@Retention(RetentionPolicy.CLASS)</div><div class="line">public @interface DIActivity &#123;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Target(ElementType.FIELD)</div><div class="line">@Retention(RetentionPolicy.RUNTIME)</div><div class="line">public @interface DIView &#123;</div><div class="line">    int value() default 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>创建DIProcessor方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@AutoService(Processor.class)</div><div class="line">public class DIProcessor extends AbstractProcessor &#123;</div><div class="line"></div><div class="line">    private Elements elementUtils;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Set&lt;String&gt; getSupportedAnnotationTypes() &#123;</div><div class="line">        // 规定需要处理的注解</div><div class="line">        return Collections.singleton(DIActivity.class.getCanonicalName());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean process(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnv) &#123;</div><div class="line">        System.out.println(&quot;DIProcessor&quot;);</div><div class="line">        Set&lt;? extends Element&gt; elements = roundEnv.getElementsAnnotatedWith(DIActivity.class);</div><div class="line">        for (Element element : elements) &#123;</div><div class="line">            // 判断是否Class</div><div class="line">            TypeElement typeElement = (TypeElement) element;</div><div class="line">            List&lt;? extends Element&gt; members = elementUtils.getAllMembers(typeElement);</div><div class="line">            MethodSpec.Builder bindViewMethodSpecBuilder = MethodSpec.methodBuilder(&quot;bindView&quot;)</div><div class="line">                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)</div><div class="line">                    .returns(TypeName.VOID)</div><div class="line">                    .addParameter(ClassName.get(typeElement.asType()), &quot;activity&quot;);</div><div class="line">            for (Element item : members) &#123;</div><div class="line">                DIView diView = item.getAnnotation(DIView.class);</div><div class="line">                if (diView == null)&#123;</div><div class="line">                    continue;</div><div class="line">                &#125;</div><div class="line">                bindViewMethodSpecBuilder.addStatement(String.format(&quot;activity.%s = (%s) activity.findViewById(%s)&quot;,item.getSimpleName(),ClassName.get(item.asType()).toString(),diView.value()));</div><div class="line">            &#125;</div><div class="line">            TypeSpec typeSpec = TypeSpec.classBuilder(&quot;DI&quot; + element.getSimpleName())</div><div class="line">                    .superclass(TypeName.get(typeElement.asType()))</div><div class="line">                    .addModifiers(Modifier.PUBLIC, Modifier.FINAL)</div><div class="line">                    .addMethod(bindViewMethodSpecBuilder.build())</div><div class="line">                    .build();</div><div class="line">            JavaFile javaFile = JavaFile.builder(getPackageName(typeElement), typeSpec).build();</div><div class="line"></div><div class="line">            try &#123;</div><div class="line">                javaFile.writeTo(processingEnv.getFiler());</div><div class="line">            &#125; catch (IOException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private String getPackageName(TypeElement type) &#123;</div><div class="line">        return elementUtils.getPackageOf(type).getQualifiedName().toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public synchronized void init(ProcessingEnvironment processingEnv) &#123;</div><div class="line">        super.init(processingEnv);</div><div class="line">        elementUtils = processingEnv.getElementUtils();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public SourceVersion getSupportedSourceVersion() &#123;</div><div class="line">        return SourceVersion.RELEASE_7;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>使用DIActivity</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@DIActivity</div><div class="line">public class MainActivity extends Activity &#123;</div><div class="line">    @DIView(R.id.text)</div><div class="line">    TextView textView;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        DIMainActivity.bindView(this);</div><div class="line">        textView.setText(&quot;Hello World!&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>实际上就是通过apt生成以下代码<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public final class DIMainActivity extends MainActivity &#123;</div><div class="line"> public static void bindView(MainActivity activity) &#123;</div><div class="line">   activity.textView = (android.widget.TextView) activity.findViewById(R.id.text);</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h3><h5 id="常用Element子类"><a href="#常用Element子类" class="headerlink" title="常用Element子类"></a>常用Element子类</h5><ol>
+<li>TypeElement：类</li>
+<li>ExecutableElement：成员方法</li>
+<li>VariableElement：成员变量</li>
+</ol>
+<h5 id="通过包名和类名获取TypeName"><a href="#通过包名和类名获取TypeName" class="headerlink" title="通过包名和类名获取TypeName"></a>通过包名和类名获取TypeName</h5><p>TypeName targetClassName = ClassName.get(“PackageName”, “ClassName”);</p>
+<h5 id="通过Element获取TypeName"><a href="#通过Element获取TypeName" class="headerlink" title="通过Element获取TypeName"></a>通过Element获取TypeName</h5><p>TypeName type = TypeName.get(element.asType());</p>
+<h5 id="获取TypeElement的包名"><a href="#获取TypeElement的包名" class="headerlink" title="获取TypeElement的包名"></a>获取TypeElement的包名</h5><p>String packageName = processingEnv.getElementUtils().getPackageOf(type).getQualifiedName().toString();</p>
+<h5 id="获取TypeElement的所有成员变量和成员方法"><a href="#获取TypeElement的所有成员变量和成员方法" class="headerlink" title="获取TypeElement的所有成员变量和成员方法"></a>获取TypeElement的所有成员变量和成员方法</h5><p>List&lt;? extends Element&gt; members = processingEnv.getElementUtils().getAllMembers(typeElement);</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p> 推荐阅读dagger2、dbflow、ButterKnife等基于apt的开源项目代码。<a href="https://github.com/square/javapoet" target="_blank" rel="external">JavaPoet</a> 也有很多例子可以学习。</p>
+<h4 id="Example代码"><a href="#Example代码" class="headerlink" title="Example代码"></a>Example代码</h4><p><a href="https://github.com/taoweiji/DemoAPT" target="_blank" rel="external">https://github.com/taoweiji/DemoAPT</a></p>
+<h3 id="我们的开源项目推荐："><a href="#我们的开源项目推荐：" class="headerlink" title="我们的开源项目推荐："></a>我们的开源项目推荐：</h3><h4 id="Android快速持久化框架：AptPreferences"><a href="#Android快速持久化框架：AptPreferences" class="headerlink" title="Android快速持久化框架：AptPreferences"></a>Android快速持久化框架：AptPreferences</h4><p>AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePreferences的使用，减少代码的编写。可以非常快速地保存基本类型和对象。AptPreferences是基于APT技术实现，在编译期间实现代码的生成，根据不同的用户区分持久化信息。</p>
+<p><a href="https://github.com/joyrun/AptPreferences" target="_blank" rel="external">https://github.com/joyrun/AptPreferences</a></p>
+<h4 id="ActivityRouter路由框架：通过注解实现URL打开Activity"><a href="#ActivityRouter路由框架：通过注解实现URL打开Activity" class="headerlink" title="ActivityRouter路由框架：通过注解实现URL打开Activity"></a>ActivityRouter路由框架：通过注解实现URL打开Activity</h4><p>基于apt技术，通过注解方式来实现URL打开Activity功能，并支持在WebView和外部浏览器使用，支持多级Activity跳转，支持Bundle、Uri参数注入并转换参数类型。</p>
+<p><a href="https://github.com/joyrun/ActivityRouter" target="_blank" rel="external">https://github.com/joyrun/ActivityRouter</a></p>
+
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/07/19/AptHelloWorld/"
+                    data-title="Android APT（编译时代码生成）最佳实践"
+                    data-url="https://joyrun.github.io/2016/07/19/AptHelloWorld/"
+                    data-images="https://joyrun.github.io/2016/07/19/AptHelloWorld/post-bg-2015.jpg"
+                    data-content="越来越多第三方库使用apt技术，如DBflow、Dagger2、ButterKnife、Act... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/07/19/AptPreferences/" data-toggle="tooltip" data-placement="top" title="Android快速持久化框架 AptPreferences">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/07/18/java-annotation/" data-toggle="tooltip" data-placement="top" title="Java Annotation最佳入门实践">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/07/19/AptHelloWorld/"
+                        data-title="Android APT（编译时代码生成）最佳实践"
+                        data-url="https://joyrun.github.io/2016/07/19/AptHelloWorld/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

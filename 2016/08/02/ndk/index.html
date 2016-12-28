@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          C/C++在Java项目、Android和Objective-C三大平台下实现混合编程 - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/08/02/ndk/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Android Native &amp; C++" title="Android Native &amp; C++">Android Native &amp; C++</a>
+                        
+                    </div>
+                    <h1>C/C++在Java项目、Android和Objective-C三大平台下实现混合编程</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Wiki on
+                        2016-08-02
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>Android和iOS开发都支持C++开发，可以一套代码多平台使用。同时C++难以反编译的特性也可以为Android开发带来代码的保密，另一native特性也可以提高代码的运行效率。</p>
+<h3 id="一、为什么使用C-C"><a href="#一、为什么使用C-C" class="headerlink" title="一、为什么使用C/C++"></a>一、为什么使用C/C++</h3><ol>
+<li>便于移植，用C/C++写得库可以方便在其他的平台上再次使用。</li>
+<li>代码的保护，由于java层代码很容易被反编译，而C/C++库反汇难度较大。</li>
+<li>提高程序的执行效率，将要求高性能的应用逻辑使用C/C++开发，从而提高应用程序的执行效率。</li>
+<li>访问现有开源库，需要访问底层的API或引用一些只有C/C++的库。</li>
+</ol>
+<h3 id="二、开发工具介绍"><a href="#二、开发工具介绍" class="headerlink" title="二、开发工具介绍"></a>二、开发工具介绍</h3><p>尽管Android Studio可以同时编写C++和Java代码，写完就可以编译运行，但是对联想和错误提示并不是非常友好，个人建议C++的整体代码使用Visual Studio或Xcode编译开发，联想功能非常友好，编译速度很快，调试也非常方便。</p>
+<ul>
+<li>Visual Studio（PC）</li>
+<li>Xcode（Mac）</li>
+<li>Android Studio（多平台）</li>
+<li>eclipse（多平台）</li>
+</ul>
+<h3 id="三、第一行代码"><a href="#三、第一行代码" class="headerlink" title="三、第一行代码"></a>三、第一行代码</h3><h4 id="1-如何在Objective-C项目中使用C-；"><a href="#1-如何在Objective-C项目中使用C-；" class="headerlink" title="1. 如何在Objective-C项目中使用C++；"></a>1. 如何在Objective-C项目中使用C++；</h4><p>在Objective-C使用C/C++非常简单，仅仅需要把.m后缀的文件改成.mm即可使用C++，我们通常不会把.mm的文件写到整个项目都有，而是设计一个接口，用来做两个语言之间的桥梁，他们之间的交互仅仅在这个接口。</p>
+<h5 id="要点：String类型转换"><a href="#要点：String类型转换" class="headerlink" title="要点：String类型转换"></a>要点：String类型转换</h5><figure class="highlight c++"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Objective-C(NSString) -&gt; C++(std::string)</span></div><div class="line">NSString * ocString = @<span class="string">"Hello World,OC"</span>;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">string</span> cppString = [ocString UTF8String];</div><div class="line"><span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;cppString&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</div><div class="line"></div><div class="line"><span class="comment">// C++(std::string) -&gt; Objective-C(NSString)</span></div><div class="line"><span class="built_in">std</span>::<span class="built_in">string</span>  cppString2 = <span class="string">"Hello World,C++"</span>;</div><div class="line">NSString *ocString2= [NSString stringWithCString:cppString2.c_str() encoding:[NSString defaultCStringEncoding]];</div><div class="line">NSLog(@<span class="string">"%@"</span>,ocString2);</div></pre></td></tr></table></figure>
+<p>记得要include相关的文件<br><figure class="highlight c++"><table><tr><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div></pre></td></tr></table></figure></p>
+<h4 id="2-在普通的JAVA项目中使用JNI编程"><a href="#2-在普通的JAVA项目中使用JNI编程" class="headerlink" title="2.在普通的JAVA项目中使用JNI编程"></a>2.在普通的JAVA项目中使用JNI编程</h4><p>由于我是在MAC下办公，所以这里就介绍如何在MAC下进行JNI开发，在Windows平台下的Virtual Studio也很简单。</p>
+<h5 id="第一步：在Xcode下创建一个普通的C-项目"><a href="#第一步：在Xcode下创建一个普通的C-项目" class="headerlink" title="第一步：在Xcode下创建一个普通的C++项目"></a>第一步：在Xcode下创建一个普通的C++项目</h5><p><img src="1.jpg" alt="image"></p>
+<p><img src="2.jpg" alt="image"></p>
+<h5 id="第二步：关联JavaVM的Framework"><a href="#第二步：关联JavaVM的Framework" class="headerlink" title="第二步：关联JavaVM的Framework"></a>第二步：关联JavaVM的Framework</h5><p>路径：</p>
+<blockquote>
+<p>/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaNativeFoundation.framework/</p>
+</blockquote>
+<p><img src="3.jpg" alt="image"></p>
+<h5 id="第三步：创建头文件，用于和Java交互-cn-taoweiji-nativemodule-NativeDemo-h"><a href="#第三步：创建头文件，用于和Java交互-cn-taoweiji-nativemodule-NativeDemo-h" class="headerlink" title="第三步：创建头文件，用于和Java交互 cn_taoweiji_nativemodule_NativeDemo.h"></a>第三步：创建头文件，用于和Java交互 cn_taoweiji_nativemodule_NativeDemo.h</h5><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;JavaVM/jni.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> _Included_cn_taoweiji_nativemodule_NativeDemo</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> _Included_cn_taoweiji_nativemodule_NativeDemo</span></div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></div><div class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line">    <span class="function">JNIEXPORT jint JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_add</span></span></div><div class="line">    <span class="params">(JNIEnv *, jclass, jint, jint)</span>;</div><div class="line"></div><div class="line">    <span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_say</span></span></div><div class="line">    <span class="params">(JNIEnv *, jclass, jstring)</span>;</div><div class="line"></div><div class="line">    <span class="function">JNIEXPORT jstring JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_getInfo</span></span></div><div class="line">    <span class="params">(JNIEnv *, jclass)</span>;</div><div class="line">    </div><div class="line">    <span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_nativeToJava</span></span></div><div class="line">    <span class="params">(JNIEnv *, jclass, jobject)</span>;</div><div class="line">    </div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></div><div class="line">&#125;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
+<h5 id="第四步：创建实现-NativeDemo-cpp"><a href="#第四步：创建实现-NativeDemo-cpp" class="headerlink" title="第四步：创建实现 NativeDemo.cpp"></a>第四步：创建实现 NativeDemo.cpp</h5><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cn_taoweiji_nativemodule_NativeDemo.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"></div><div class="line"><span class="function">JNIEXPORT jint JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_add</span><span class="params">(JNIEnv *, jclass, jint param1, jint param2)</span></span></div><div class="line">&#123;</div><div class="line">    jint result = param1 + param2;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div><div class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_say</span><span class="params">(JNIEnv *env, jclass, jstring param)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="comment">// std::string -&gt; jstring</span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *param_char = env-&gt;GetStringUTFChars(param, <span class="literal">NULL</span>);</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> str = param_char;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">JNIEXPORT jstring JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_getInfo</span><span class="params">(JNIEnv *env, jclass)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="comment">// jstring -&gt; std::string</span></div><div class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> str = <span class="string">"Hi,I am C++."</span>;</div><div class="line">    jstring result =  env-&gt;NewStringUTF(str.c_str());</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_cn_taoweiji_nativemodule_NativeDemo_nativeToJava</span><span class="params">(JNIEnv * env, jclass, jobject obj)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="comment">// 调用Java方法</span></div><div class="line">    jclass cls = env-&gt;FindClass(<span class="string">"cn/taoweiji/nativemodule/NativeDemo"</span>);</div><div class="line">    <span class="comment">//int subtract(int param1, int param2) -&gt; (II)I</span></div><div class="line">    jmethodID mid = env-&gt;GetMethodID(cls, <span class="string">"subtract"</span>, <span class="string">"(II)I"</span>);</div><div class="line">    <span class="keyword">int</span> result = (<span class="keyword">int</span>) env-&gt;CallIntMethod(obj, mid, <span class="number">10</span>, <span class="number">2</span>);</div><div class="line"><span class="comment">//    std::cout&lt;&lt;result&lt;&lt;std::endl;</span></div><div class="line">    <span class="comment">//常见类型转换例子</span></div><div class="line">    <span class="comment">//String getInfo();</span></div><div class="line">    <span class="comment">//-&gt; ()Ljava/lang/String;</span></div><div class="line">    </div><div class="line">    <span class="comment">//PackageInfo getPackageInfo(String packageName, int flags);</span></div><div class="line">    <span class="comment">//-&gt; (Ljava/lang/String;I)Landroid/content/pm/PackageInfo;;</span></div><div class="line">    </div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="第五步：编译生成JNI文件，按-⌘-B-Product-gt-Build"><a href="#第五步：编译生成JNI文件，按-⌘-B-Product-gt-Build" class="headerlink" title="第五步：编译生成JNI文件，按  ⌘+B (Product -&gt; Build)."></a>第五步：编译生成JNI文件，按  ⌘+B (Product -&gt; Build).</h5><p>编译后文件<br><img src="4.jpg" alt="image"></p>
+<p>根据自己的电脑环境，查找编译后的文件，我的路径是</p>
+<blockquote>
+<p>/Users/Wiki/Library/Developer/Xcode/DerivedData/DEMO_MAC_JNI-clxymnzifegyfaajsaattzgxqfbr/Build/Products/Debug/DEMO_MAC_JNI</p>
+</blockquote>
+<h5 id="第六步：编写JNI接口"><a href="#第六步：编写JNI接口" class="headerlink" title="第六步：编写JNI接口"></a>第六步：编写JNI接口</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">package cn.taoweiji.nativemodule;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 包名和类名称一定要和前面的C++头文件对应</div><div class="line"> * cn_taoweiji_nativemodule_NativeDemo.h</div><div class="line"> */</div><div class="line">public class NativeDemo &#123;</div><div class="line">    public static native int add(int param1, int param2);</div><div class="line"></div><div class="line">    public static native void say(String name);</div><div class="line"></div><div class="line">    public static native String getInfo();</div><div class="line"></div><div class="line">    public static native void nativeToJava(NativeDemo nativeDemo);</div><div class="line"></div><div class="line">    public int subtract(int param1, int param2) &#123;</div><div class="line">        System.out.println(&quot;NativeDemo:&quot; + String.format(&quot;%s - %s = %s&quot;, param1, param2, param1 - param2));</div><div class="line">        return param1 - param2;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="第七步：调用C"><a href="#第七步：调用C" class="headerlink" title="第七步：调用C++"></a>第七步：调用C++</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class Main &#123;</div><div class="line"></div><div class="line">    static &#123;</div><div class="line">        System.load(&quot;/Users/Wiki/Library/Developer/Xcode/DerivedData/DEMO_MAC_JNI-clxymnzifegyfaajsaattzgxqfbr/Build/Products/Debug/DEMO_MAC_JNI&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        System.out.println(&quot;Hello World!&quot;);</div><div class="line">        int result = NativeDemo.add(1, 2);</div><div class="line">        System.out.println(&quot;1+2=&quot; + String.valueOf(result));</div><div class="line">        NativeDemo.say(&quot;Hello,I am Java.&quot;);</div><div class="line">        System.out.println(&quot;getInfo:&quot; + NativeDemo.getInfo());</div><div class="line">        NativeDemo.nativeToJava(new NativeDemo());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="3-在ANDROID项目中使用NDK"><a href="#3-在ANDROID项目中使用NDK" class="headerlink" title="3. 在ANDROID项目中使用NDK"></a>3. 在ANDROID项目中使用NDK</h4><p>Android的JNI开发，C++文件必须编写在独立的module里面，Java接口代码可以编写在app(module)，也可以和C++放在同一个module，通过gradle关联。详细代码请自行下载demo浏览<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">gradle配置（NativeModule）</div><div class="line">apply plugin: &apos;com.android.library&apos;</div><div class="line"></div><div class="line">android &#123;</div><div class="line">    compileSdkVersion 23</div><div class="line">    buildToolsVersion &quot;24.0.0 rc2&quot;</div><div class="line"></div><div class="line">    defaultConfig &#123;</div><div class="line">        minSdkVersion 14</div><div class="line">        targetSdkVersion 23</div><div class="line">        versionCode 1</div><div class="line">        versionName &quot;1.0&quot;</div><div class="line">    &#125;</div><div class="line">    buildTypes &#123;</div><div class="line">        release &#123;</div><div class="line">            minifyEnabled false</div><div class="line">            proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</div><div class="line"></div><div class="line">            ndk &#123;</div><div class="line">                moduleName &quot;joyrun&quot;</div><div class="line">                stl &quot;stlport_static&quot;</div><div class="line">                ldLibs &quot;log&quot;//用于解决__android_log_print</div><div class="line">                abiFilters &quot;armeabi&quot;, &quot;armeabi-v7a&quot;, &quot;x86&quot;, &quot;x86_64&quot;, &quot;arm64-v8a&quot;</div><div class="line">                //add -fexceptions to allow throw error</div><div class="line">                //add -w to &quot;format not a string literal and no format arguments [-Werror=format-security&quot;</div><div class="line">                cFlags &quot;-w -fexceptions&quot;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">dependencies &#123;</div><div class="line">    compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>编写JNI接口<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// NativeDemo.java</div><div class="line"></div><div class="line">package cn.taoweiji.nativemodule;</div><div class="line">public class NativeDemo &#123;</div><div class="line">    public static native int add(int param1, int param2);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>编写C++接口代码，JNI文件目录默认是module/src/main/jni，可以通过gradle配置改变<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// cn_taoweiji_nativemodule_NativeDemo.h</div><div class="line"></div><div class="line">#include &lt;jni.h&gt;</div><div class="line"></div><div class="line">#ifndef _Included_cn_taoweiji_nativemodule_NativeDemo</div><div class="line">#define _Included_cn_taoweiji_nativemodule_NativeDemo</div><div class="line">#ifdef __cplusplus</div><div class="line">extern &quot;C&quot; &#123;</div><div class="line">#endif</div><div class="line">/*</div><div class="line"> * Class:     cn_taoweiji_nativemodule_NativeDemo</div><div class="line"> * Method:    add</div><div class="line"> * Signature: (II)I</div><div class="line"> */</div><div class="line">JNIEXPORT jint JNICALL Java_cn_taoweiji_nativemodule_NativeDemo_add(JNIEnv *, jclass, jint, jint);</div><div class="line"></div><div class="line">#ifdef __cplusplus</div><div class="line">&#125;</div><div class="line">#endif</div><div class="line">#endif</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// NativeDemo.cpp</div><div class="line"></div><div class="line">#include &quot;cn_taoweiji_nativemodule_NativeDemo.h&quot;</div><div class="line"></div><div class="line">JNIEXPORT jint JNICALL Java_cn_taoweiji_nativemodule_NativeDemo_add(JNIEnv *, jclass, jint param1, jint param2)</div><div class="line">&#123;</div><div class="line">    jint result = param1 + param2;</div><div class="line">    return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>调用<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// 静态加载</div><div class="line">static &#123;</div><div class="line">     System.loadLibrary(&quot;joyrun&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//调用</div><div class="line">int result = NativeDemo.add(1,2);</div><div class="line">Log.i(&quot;1+2=&quot;,String.valueOf(result));</div></pre></td></tr></table></figure></p>
+<h3 id="四、NDK开发要点"><a href="#四、NDK开发要点" class="headerlink" title="四、NDK开发要点"></a>四、NDK开发要点</h3><h4 id="编译文件分析"><a href="#编译文件分析" class="headerlink" title="编译文件分析"></a>编译文件分析</h4><p>将NativeModule编译后生成的aar文件后缀改成.zip解压，可以发现里面有个jni文件，打开可以看到”armeabi”, “armeabi-v7a”, “x86”, “x86_64”, “arm64-v8a”等文件夹，再打开可以看到是以lib前缀的so格式文件，这就是编译后的native层文件，我们平常引用的第三方库（百度地图）也是要添加这些文件到我们的libs文件夹，不同的名称代表着不同平台相关的编译文件，市面上大多数的手机都是arm架构CPU，x86架构的手机几乎没人用（genymotion模拟器属于x86平台），所以我们通常发布APP不会考虑x86平台，仅仅添加armeabi文件即可，但是在开发过程中建议也添加x86的so文件，以方便我们在模拟器上运行。</p>
+<h4 id="运行库"><a href="#运行库" class="headerlink" title="运行库"></a>运行库</h4><p>Android平台带有一个微型的C运行库支持库，成为系统运行库。该运行库不支持一下特性：C标准库、异常支持、RTTI支持。NDK提供了用于补充系统运行库功能的一些额外的C++运行库。</p>
+<table>
+<thead>
+<tr>
+<th>C++运行库</th>
+<th>C++异常支持</th>
+<th>C++RTTI</th>
+<th>C++标准库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>系统库</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>GAbi++</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>STLport</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>GNU STL</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><p>STLport</p>
+<p>STLport是一个开源的、多平台的C标准库实现。它提供一个C标准库头文件的完整集合以及对RTTI的支持。</p>
+</li>
+<li><p>GNU STL</p>
+<p>GNU标准C库，也叫libstdc-v3，是Android NDK最全面的标准C运行库。它是一个正在开发的、以实现ISO标准C库为目标的开源项目。</p>
+</li>
+</ol>
+<h4 id="gradle配置"><a href="#gradle配置" class="headerlink" title="gradle配置"></a>gradle配置</h4><ol>
+<li>STL运行库引用</li>
+<li>“armeabi”, “armeabi-v7a”, “x86”, “x86_64”, “arm64-v8a”等平台配置</li>
+<li>C++输出logcat配置</li>
+<li>一个编译异常解决</li>
+<li>异常捕获<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// 生成so文件的名称</div><div class="line">moduleName &quot;joyrun&quot;</div><div class="line">// 引入STL标准库</div><div class="line">stl &quot;stlport_static&quot;//gnustl_static</div><div class="line">//用于解决__android_log_print</div><div class="line">ldLibs &quot;log&quot;</div><div class="line">abiFilters &quot;armeabi&quot;, &quot;armeabi-v7a&quot;, &quot;x86&quot;, &quot;x86_64&quot;, &quot;arm64-v8a&quot; //添加编译的平台</div><div class="line">//add -fexceptions to allow throw error</div><div class="line">//add -w to &quot;format not a string literal and no format arguments [-Werror=format-security&quot;</div><div class="line">cFlags &quot;-w -fexceptions&quot;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="LOGCAT输出"><a href="#LOGCAT输出" class="headerlink" title="LOGCAT输出"></a>LOGCAT输出</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#include &lt;android/log.h&gt;</div><div class="line">#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, &quot;tag_joyrun&quot;, __VA_ARGS__)</div><div class="line">#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, &quot;tag_joyrun&quot;, __VA_ARGS__)</div><div class="line"></div><div class="line">LOGE(&quot;Hello Logcat&quot;);</div></pre></td></tr></table></figure>
+<h4 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// std::string -&gt; jstring</div><div class="line">std::string str = &quot;Hello World&quot;;</div><div class="line">jstring result =  env-&gt;NewStringUTF(str.c_str());</div><div class="line"></div><div class="line">// jstring -&gt; std::string</div><div class="line">jstring param;</div><div class="line">const char *param_char = env-&gt;GetStringUTFChars(param, NULL);</div><div class="line">std::string str = param_char;</div><div class="line"></div><div class="line">// jboolean 两个值 JNI_TRUE、JNI_FALSE</div></pre></td></tr></table></figure>
+<h4 id="C-调用JAVA代码"><a href="#C-调用JAVA代码" class="headerlink" title="C++调用JAVA代码"></a>C++调用JAVA代码</h4><p>//Java<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static native void nativeToJava(NativeDemo nativeDemo);</div><div class="line">public int subtract(int param1, int param2) &#123;</div><div class="line">Log.e(&quot;NativeDemo&quot;, String.format(&quot;%s - %s = %s&quot;, param1, param2, param1 - param2));</div><div class="line">return param1 - param2;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>//C++<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">JNIEXPORT void JNICALL Java_cn_taoweiji_nativemodule_NativeDemo_nativeToJava(JNIEnv * env, jclass, jobject obj)</div><div class="line">&#123;</div><div class="line">    // 调用Java方法</div><div class="line">    jclass cls = env-&gt;FindClass(&quot;cn/taoweiji/nativemodule/NativeDemo&quot;);</div><div class="line">    jmethodID mid = env-&gt;GetMethodID(cls, &quot;subtract&quot;, &quot;(II)I&quot;);</div><div class="line">    int result = (int) env-&gt;CallIntMethod(obj, mid, 10, 2);</div><div class="line">    </div><div class="line">    //常见类型转换例子</div><div class="line">    //String getInfo();</div><div class="line">    //-&gt; ()Ljava/lang/String;</div><div class="line"></div><div class="line">    //PackageInfo getPackageInfo(String packageName, int flags);</div><div class="line">    //-&gt; (Ljava/lang/String;I)Landroid/content/pm/PackageInfo;;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="一键生成从JAVA到C-接口代码脚本"><a href="#一键生成从JAVA到C-接口代码脚本" class="headerlink" title="一键生成从JAVA到C++接口代码脚本"></a>一键生成从JAVA到C++接口代码脚本</h4><p>文件：autojavah.sh<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line">export ProjectPath=$(cd &quot;../$(dirname &quot;$1&quot;)&quot;; pwd)</div><div class="line">export TargetClassName=&quot;co.runner.app.jni.NativeDemo&quot;</div><div class="line"></div><div class="line">export SourceFile=&quot;$&#123;ProjectPath&#125;/app/src/main/java&quot;</div><div class="line">export TargetPath=&quot;$&#123;ProjectPath&#125;/jni-joyrun/src/main/jni&quot;</div><div class="line"></div><div class="line">cd &quot;$&#123;SourceFile&#125;&quot;</div><div class="line">javah -d $&#123;TargetPath&#125; -classpath &quot;$&#123;SourceFile&#125;&quot; &quot;$&#123;TargetClassName&#125;&quot;</div><div class="line">echo -d $&#123;TargetPath&#125; -classpath &quot;$&#123;SourceFile&#125;&quot; &quot;$&#123;TargetClassName&#125;&quot;</div></pre></td></tr></table></figure></p>
+<h3 id="五、C-面向对象及标准库入门"><a href="#五、C-面向对象及标准库入门" class="headerlink" title="五、C++面向对象及标准库入门"></a>五、C++面向对象及标准库入门</h3><h5 id="C-类定义"><a href="#C-类定义" class="headerlink" title="C++类定义"></a>C++类定义</h5><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Demo.hpp</span></div><div class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> Demo_hpp</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> Demo_hpp</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="keyword">class</span> Demo&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> name;</div><div class="line">    <span class="keyword">int</span> age = <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>;</div><div class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> param1,<span class="keyword">int</span> param2)</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">return</span> param1 + param2;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">/* Demo_hpp */</span></span></div></pre></td></tr></table></figure>
+<h5 id="类方法的实现"><a href="#类方法的实现" class="headerlink" title="类方法的实现"></a>类方法的实现</h5><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Demo.cpp</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Demo.hpp"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">void</span> Demo::say()</div><div class="line">&#123;</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">"name = "</span>&lt;&lt;name&lt;&lt;<span class="string">",age = "</span>&lt;&lt;age&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="对象创建及访问对象的成员"><a href="#对象创建及访问对象的成员" class="headerlink" title="对象创建及访问对象的成员"></a>对象创建及访问对象的成员</h5><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="comment">//对象创建</span></div><div class="line">Demo d1;</div><div class="line">Demo * d2 = <span class="keyword">new</span> Demo;</div><div class="line"></div><div class="line"><span class="comment">// 运算符访问</span></div><div class="line">d1.say();</div><div class="line"><span class="comment">// 指针访问</span></div><div class="line">d2-&gt;say();</div><div class="line"></div><div class="line"><span class="comment">//静态函数访问</span></div><div class="line"><span class="keyword">int</span> result = Demo::add(<span class="number">1</span>,<span class="number">2</span>);</div><div class="line"><span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;<span class="string">"1 + 2 = "</span>&lt;&lt;result&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</div></pre></td></tr></table></figure>
+<h5 id="LIST链表"><a href="#LIST链表" class="headerlink" title="LIST链表"></a>LIST链表</h5><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="comment">//include相关文件</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;list&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Demo.hpp"</span></span></div><div class="line"></div><div class="line"><span class="comment">// 链表定义</span></div><div class="line"><span class="built_in">std</span>::<span class="built_in">list</span>&lt;Demo&gt; * demos = <span class="keyword">new</span> <span class="built_in">std</span>::<span class="built_in">list</span>&lt;Demo&gt;;</div><div class="line"></div><div class="line">Demo * demo = <span class="keyword">new</span> Demo;</div><div class="line">demo-&gt;name = <span class="string">"Wiki"</span>;</div><div class="line">demo-&gt;age = <span class="number">24</span>;</div><div class="line"></div><div class="line"><span class="comment">// 在后面插入数据</span></div><div class="line">demos-&gt;push_back(*demo);</div><div class="line"></div><div class="line">demo = <span class="keyword">new</span> Demo;</div><div class="line">demo-&gt;name = <span class="string">"Wiki2"</span>;</div><div class="line">demo-&gt;age = <span class="number">25</span>;</div><div class="line"><span class="comment">// 在前面插入数据</span></div><div class="line">demos-&gt;push_front(*demo);</div><div class="line"></div><div class="line"><span class="comment">// 顺序链表遍历</span></div><div class="line"><span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">list</span>&lt;Demo&gt;::iterator iter = demos-&gt;begin(); iter != demos-&gt;end(); ++iter) &#123;</div><div class="line">    iter-&gt;say();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 反顺序链表遍历</span></div><div class="line"><span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">list</span>&lt;Demo&gt;::reverse_iterator iter = demos-&gt;rbegin(); iter != demos-&gt;rend(); ++iter) &#123;</div><div class="line">    iter-&gt;say();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 获取指定位置元素</span></div><div class="line"><span class="built_in">std</span>::<span class="built_in">list</span>&lt;Demo&gt;::iterator iter = demos-&gt;begin();</div><div class="line">advance(iter, <span class="number">1</span>);</div><div class="line">iter-&gt;say();</div></pre></td></tr></table></figure>
+<h5 id="指针、引用和值"><a href="#指针、引用和值" class="headerlink" title="指针、引用和值"></a>指针、引用和值</h5><p>在C++中，函数可以用许多不同的方法传递参数，比如通过指针、引用或是直接传值。<br><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="comment">// 通过指针</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">handle1</span><span class="params">(Demo *p)</span></span>;</div><div class="line"><span class="comment">// 通过引用</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">handle1</span><span class="params">(Demo&amp; p)</span></span>;</div><div class="line"><span class="comment">// 通过值</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">handle1</span><span class="params">(Demo *demo)</span></span>;</div></pre></td></tr></table></figure></p>
+<h5 id="堆和栈的理解"><a href="#堆和栈的理解" class="headerlink" title="堆和栈的理解"></a>堆和栈的理解</h5><ul>
+<li>栈（stack）：由操作系统自动分配释放 ，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈；</li>
+<li>堆（heap）： 一般由程序员分配释放， 若程序员不释放，程序结束时可能由OS回收，分配方式倒是类似于链表。<figure class="highlight c"><table><tr><td class="code"><pre><div class="line">Demo d1;<span class="comment">//栈</span></div><div class="line">Demo * d2 = <span class="keyword">new</span> Demo;<span class="comment">//堆</span></div><div class="line"></div><div class="line"><span class="keyword">char</span> c; <span class="comment">//栈上分配</span></div><div class="line"><span class="keyword">char</span> *p = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">3</span>]; <span class="comment">//堆上分配，将地址赋给了p;</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h5><p>new和C++ delete运算符用于动态分配和撤销内存的运算符，自己new出来的对象就要通过delete释放内存。<br><figure class="highlight c"><table><tr><td class="code"><pre><div class="line"><span class="keyword">delete</span> demos;</div></pre></td></tr></table></figure></p>
+<h3 id="六、开发中常用的方法及注意事项（坑）"><a href="#六、开发中常用的方法及注意事项（坑）" class="headerlink" title="六、开发中常用的方法及注意事项（坑）"></a>六、开发中常用的方法及注意事项（坑）</h3><ul>
+<li><p>时间戳获取方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">long time = time(0);</div></pre></td></tr></table></figure>
+</li>
+<li><p>注意so文件防盗用问题。</p>
+</li>
+<li>尽量避免调用与平台有关的方法，避免移植带来问题。</li>
+<li>JNI接口的包名不能带有下划线‘_’。</li>
+</ul>
+<h5 id="相关源代码："><a href="#相关源代码：" class="headerlink" title="相关源代码："></a>相关源代码：</h5><ul>
+<li>Android： <a href="https://github.com/taoweiji/DEMO_NDK" target="_blank" rel="external">https://github.com/taoweiji/DEMO_NDK</a></li>
+<li>Objective-C： <a href="https://github.com/taoweiji/DEMO_CPP_OC" target="_blank" rel="external">https://github.com/taoweiji/DEMO_CPP_OC</a></li>
+<li>MAC-JNI： <a href="https://github.com/taoweiji/DEMO_MAC_JNI" target="_blank" rel="external">https://github.com/taoweiji/DEMO_MAC_JNI</a></li>
+</ul>
+
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/08/02/ndk/"
+                    data-title="C/C++在Java项目、Android和Objective-C三大平台下实现混合编程"
+                    data-url="https://joyrun.github.io/2016/08/02/ndk/"
+                    data-images=""
+                    data-content="Android和iOS开发都支持C++开发，可以一套代码多平台使用。同时C++难以反编译的特性... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/02/dbflow/" data-toggle="tooltip" data-placement="top" title="Android高性能ORM数据库DBFlow入门">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/01/ActivityRouter/" data-toggle="tooltip" data-placement="top" title="ActivityRouter路由框架：通过注解实现URL打开Activity">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/08/02/ndk/"
+                        data-title="C/C++在Java项目、Android和Objective-C三大平台下实现混合编程"
+                        data-url="https://joyrun.github.io/2016/08/02/ndk/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Android Native &amp; C++" title="Android Native &amp; C++">Android Native &amp; C++</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

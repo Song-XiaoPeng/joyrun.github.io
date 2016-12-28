@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          利用jitpack.io发布Android、Java项目，通过gradle、maven方式引用 - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/07/21/opensource/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#其它" title="其它">其它</a>
+                        
+                    </div>
+                    <h1>利用jitpack.io发布Android、Java项目，通过gradle、maven方式引用</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Wiki on
+                        2016-07-21
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>我们经常使用第三方的开源框架，如果我们写的框架或者工具也比较好用，我们也可以选择开源给别人使用，分享更容易让人成长！</p>
+</blockquote>
+<h5 id="代码管理"><a href="#代码管理" class="headerlink" title="代码管理"></a>代码管理</h5><p>毋庸置疑，开源项目的代码管理首选github，这里就不多说了。</p>
+<h3 id="Android、Java项目开源"><a href="#Android、Java项目开源" class="headerlink" title="Android、Java项目开源"></a>Android、Java项目开源</h3><p>这里就仅仅介绍如何发布一个Android、Java的项目到 <a href="https://jitpack.io" target="_blank" rel="external">https://jitpack.io</a>  。</p>
+<h4 id="第一步：配置项目根目录的build-gradle"><a href="#第一步：配置项目根目录的build-gradle" class="headerlink" title="第一步：配置项目根目录的build.gradle"></a>第一步：配置项目根目录的build.gradle</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">buildscript &#123;</div><div class="line">   repositories &#123;</div><div class="line">       jcenter()</div><div class="line">   &#125;</div><div class="line">   dependencies &#123;</div><div class="line">       classpath &apos;com.android.tools.build:gradle:1.5.0&apos;</div><div class="line">       classpath &apos;com.github.dcendents:android-maven-gradle-plugin:1.3&apos;//ADD</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="第二步：配置需要发布的Module-Lib的build-gradle"><a href="#第二步：配置需要发布的Module-Lib的build-gradle" class="headerlink" title="第二步：配置需要发布的Module Lib的build.gradle"></a>第二步：配置需要发布的Module Lib的build.gradle</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">apply plugin: &apos;java&apos;</div><div class="line">apply plugin: &apos;com.github.dcendents.android-maven&apos;//ADD</div></pre></td></tr></table></figure>
+<h4 id="第三步：发布到github"><a href="#第三步：发布到github" class="headerlink" title="第三步：发布到github"></a>第三步：发布到github</h4><p>如何发布代码到github这里就不详细说了。</p>
+<h4 id="第四步：创建Release版本"><a href="#第四步：创建Release版本" class="headerlink" title="第四步：创建Release版本"></a>第四步：创建Release版本</h4><p>1：<br><img src="4.1.jpg" alt="4.1"><br>2：<br><img src="4.2.jpg" alt="4.2"><br>3：<br><img src="4.3.jpg" alt="4.3"></p>
+<p>截图</p>
+<h4 id="第五步：到-https-jitpack-io-构建"><a href="#第五步：到-https-jitpack-io-构建" class="headerlink" title="第五步：到 https://jitpack.io 构建"></a>第五步：到 <a href="https://jitpack.io" target="_blank" rel="external">https://jitpack.io</a> 构建</h4><p><img src="5.1.jpg" alt="5.1"></p>
+<ol>
+<li>在输入框输入github的地址，点击Look up就会列出我们创建的发布版本</li>
+<li>点击Git it即可开始构建<h4 id="第六步：完成，即可通过gradle或maven引入发布的Lib"><a href="#第六步：完成，即可通过gradle或maven引入发布的Lib" class="headerlink" title="第六步：完成，即可通过gradle或maven引入发布的Lib"></a>第六步：完成，即可通过gradle或maven引入发布的Lib</h4>1：<br><img src="6.1.jpg" alt="6.1"><br>2：<br><img src="6.2.jpg" alt="6.2"><h4 id="第六步：添加仓库标识符"><a href="#第六步：添加仓库标识符" class="headerlink" title="第六步：添加仓库标识符"></a>第六步：添加仓库标识符</h4>把这段Markdown代码放到README.md页面，需要根据项目地址修改。<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">[![](https://jitpack.io/v/joyrun/PullUpSwipeRefreshLayout.svg)](https://jitpack.io/#joyrun/PullUpSwipeRefreshLayout)</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>就可以看到如下效果：<br><a href="https://jitpack.io/#joyrun/PullUpSwipeRefreshLayout" target="_blank" rel="external"><img src="https://jitpack.io/v/joyrun/PullUpSwipeRefreshLayout.svg" alt=""></a></p>
+<h4 id="第七步：添加开源协议"><a href="#第七步：添加开源协议" class="headerlink" title="第七步：添加开源协议"></a>第七步：添加开源协议</h4><p>一个开源项目，通常都是需要选择一个开源协议，通常开源协议的声明在根目录的<code>LICENSE.txt</code>，可以在创建项目的时候就选择好开源协议，或者在github直接创建<code>LICENSE.txt</code>文件，github会给出提示叫你选择开源协议。</p>
+<h4 id="第八步：通过gradle引用"><a href="#第八步：通过gradle引用" class="headerlink" title="第八步：通过gradle引用"></a>第八步：通过gradle引用</h4><h5 id="gradle引用"><a href="#gradle引用" class="headerlink" title="gradle引用"></a>gradle引用</h5><p>修改项目根目录的build.gradle：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">allprojects &#123;</div><div class="line">	repositories &#123;</div><div class="line">	//...</div><div class="line">	maven &#123; url &quot;https://jitpack.io&quot; &#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>修改app的build.gradle：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">	compile &apos;com.github.joyrun:PullUpSwipeRefreshLayout:0.1.1&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="maven引用"><a href="#maven引用" class="headerlink" title="maven引用"></a>maven引用</h5><figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">repository</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">id</span>&gt;</span>jitpack.io<span class="tag">&lt;/<span class="name">id</span>&gt;</span></div><div class="line">		<span class="tag">&lt;<span class="name">url</span>&gt;</span>https://jitpack.io<span class="tag">&lt;/<span class="name">url</span>&gt;</span></div><div class="line">	<span class="tag">&lt;/<span class="name">repository</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></div><div class="line">... </div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.joyrun<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>PullUpSwipeRefreshLayout<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>0.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<h4 id="示范代码"><a href="#示范代码" class="headerlink" title="示范代码"></a>示范代码</h4><ul>
+<li><p>单module项目</p>
+<p><a href="https://github.com/joyrun/PullUpSwipeRefreshLayout" target="_blank" rel="external">https://github.com/joyrun/PullUpSwipeRefreshLayout</a></p>
+</li>
+</ul>
+<ul>
+<li><p>多module项目(apt)</p>
+<p><a href="https://github.com/joyrun/AptPreferences" target="_blank" rel="external">https://github.com/joyrun/AptPreferences</a></p>
+</li>
+</ul>
+
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/07/21/opensource/"
+                    data-title="利用jitpack.io发布Android、Java项目，通过gradle、maven方式引用"
+                    data-url="https://joyrun.github.io/2016/07/21/opensource/"
+                    data-images=""
+                    data-content="
+我们经常使用第三方的开源框架，如果我们写的框架或者工具也比较好用，我们也可以选择开源给别人使... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/07/21/GithubCreateBlog/" data-toggle="tooltip" data-placement="top" title="如何利用github创建博客">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/07/19/AptPreferences/" data-toggle="tooltip" data-placement="top" title="Android快速持久化框架 AptPreferences">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/07/21/opensource/"
+                        data-title="利用jitpack.io发布Android、Java项目，通过gradle、maven方式引用"
+                        data-url="https://joyrun.github.io/2016/07/21/opensource/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#其它" title="其它">其它</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

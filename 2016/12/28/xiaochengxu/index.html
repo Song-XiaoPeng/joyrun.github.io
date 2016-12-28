@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          微信小程序-从零开始制作一个跑步微信小程序 - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/12/28/xiaochengxu/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#其它" title="其它">其它</a>
+                        
+                    </div>
+                    <h1>微信小程序-从零开始制作一个跑步微信小程序</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by alanwang on
+                        2016-12-28
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>#前言<br>我已经把全部代码放在github上-<a href="https://github.com/alanwangmodify/weChatApp-Run" target="_blank" rel="external">weChatApp-Run</a>，可以下载来看看或者先star收藏，我以后还会进行一些优化更新。现在只是一个学习Demo，大家沟通学习，实际应用还需更多优化。</p>
+<p>#正文</p>
+<p>###一、准备工作  </p>
+<p>1、注册一个小程序账号，得用一个没注册过公众号的邮箱注册。<br>2、注册过程中需要很多认证，有很多认证，比较繁琐，如果暂时只是开发测试，不进行提审、发布的话，只要完成营业执照号填写就可以了，不需要完成微信认证。<br>3、注册完账号，登录，在主页面左边列表中点击设置，然后再设置页面中选开发设置就可以看到<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">![主页面](http://upload-images.jianshu.io/upload_images/1819750-f342547cf1916b3d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">![设置页面](http://upload-images.jianshu.io/upload_images/1819750-c0d366994ea28442.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">###二、开发工具</div><div class="line">可以到官网下载[开发工具下载](http://www.ionic.wang/weixin/devtools/download.html)</div><div class="line"></div><div class="line"></div><div class="line">![开发工具](http://upload-images.jianshu.io/upload_images/1819750-9ce9b25dc71dfb83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line">![开发工具编辑页面](http://upload-images.jianshu.io/upload_images/1819750-0f9c4f9eac30544c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line">###三、开始项目</div><div class="line"></div><div class="line">打开开发者工具，选择小程序选项，到达添加项目页面</div><div class="line">![添加项目](http://upload-images.jianshu.io/upload_images/1819750-e2a326972dde6bcd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line">这个时候在前面设置页面的```AppId```就用到了。</div><div class="line"></div><div class="line">如果项目目录中的文件是个空文件夹，会提示是否创建quick start 项目。</div><div class="line">选择“是”，开发者工具会帮助我们在开发目录里生成一个简单的 demo。</div><div class="line">这个Demo拥有一个完整的小程序的大概框架。</div><div class="line"></div><div class="line"></div><div class="line">#####1、框架</div><div class="line"></div><div class="line">先看下一目录：</div><div class="line">![文件目录.png](http://upload-images.jianshu.io/upload_images/1819750-b32bd589f698dac4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line">app.js: 小程序逻辑，生命周期，，全局变量</div><div class="line">app.json: 小程序公共设置，导航栏颜色等，不可以注释</div><div class="line">app.wxss :小程序公共样式，类CSS 。</div><div class="line"></div><div class="line"></div><div class="line">#####小程序页面构成：</div><div class="line"></div><div class="line">![页面构成](http://upload-images.jianshu.io/upload_images/1819750-ebee0fd2b89a187c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line">每一个小程序页面是由同路径下同名的四个不同后缀文件的组成，如：index.js、index.wxml、index.wxss、index.json。</div><div class="line"></div><div class="line">![葛文佳介绍](http://upload-images.jianshu.io/upload_images/1819750-94ea900bb2e12460.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">微信小程序中的每一个页面的【路径+页面名】都需要写在 app.json 的 pages 中，且 pages 中的第一个页面是小程序的首页。</div><div class="line"></div><div class="line">![路径](http://upload-images.jianshu.io/upload_images/1819750-c1940a47c64725df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">这四个文件按照功能可以分成三个部分：</div><div class="line">&gt;配置：json 文件</div><div class="line">&gt;逻辑层：js文件</div><div class="line">&gt;视图层：wxss.wxml文件</div><div class="line"></div><div class="line">在 iOS 上，小程序的 javascript 代码是运行在 JavaScriptCore 中</div><div class="line">在 Android 上，小程序的 javascript 代码是通过 X5 内核来解析</div><div class="line">在 开发工具上， 小程序的 javascript 代码是运行在 NW.js（chrome内核） 中。所以开发工具上的效果跟实际效果有所出入。</div><div class="line"></div><div class="line"></div><div class="line">#####2、组件</div><div class="line">  微信提供了许多组件，主要分为八种:</div><div class="line">&gt;视图容器、</div><div class="line">&gt;基础内容、</div><div class="line">&gt;表单组件、</div><div class="line">&gt;操作反馈、</div><div class="line">&gt;导航、</div><div class="line">&gt;媒体组件、</div><div class="line">&gt;地图、</div><div class="line">&gt;画布</div><div class="line"></div><div class="line">包含view、scroll-view、button、form等普通常用的组件，也提供了地图```map```、画布```canvas```。</div><div class="line"></div><div class="line"> 组件主要属于视图层，通过wxml来进行结构布局，类似于html。通过wxss修改样式，类似于css。</div><div class="line">组件使用语法实例：</div></pre></td></tr></table></figure></p>
+<!--普通视图-->
+<view>这是一个普通视图</view>
+
+<!--wxss样式修改-->
+<view clas="mainView">样式修改过的视图</view>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">更多的组件以及相关使用方法可以到[官方文档-组件](https://mp.weixin.qq.com/debug/wxadoc/dev/component/view.html?t=20161107)查看</div><div class="line"></div><div class="line">#####3、API</div><div class="line">&gt;网络</div><div class="line">&gt;媒体</div><div class="line">&gt;数据</div><div class="line">&gt;位置</div><div class="line">&gt;设备</div><div class="line">&gt;界面</div><div class="line">&gt;开发接口</div><div class="line"></div><div class="line">其中```网络请求```的使用必须先到公众平台登录小程序账号，在设置页面那里，设置允许访问的域名，网络请求包含了普通的http请求、支持上传、下载、socket。基本上满足了我们开发中所需要的网络需求。</div><div class="line"></div><div class="line">这些API属于逻辑层，写在js文件中，</div><div class="line">使用实例:</div></pre></td></tr></table></figure>
+<p>wx.getLocation({<br>   type: ‘wgs84’,<br>   success: function(res) {<br>       var latitude = res.latitude<br>       var longitude = res.longitude<br>       var speed = res.speed<br>       var accuracy = res.accuracy<br>}})<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">可以到[官方文档-API](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html?t=20161109)查看其它API的使用方法。</div><div class="line">#####4、编译运行</div><div class="line">1、模拟器</div><div class="line">可以在模拟器上看效果，上面讲到了运行底层不同，效果跟在手机上运行有些差异</div><div class="line">![模拟器.png](http://upload-images.jianshu.io/upload_images/1819750-195c6b0a318eb2de.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">2、真机</div><div class="line">在左边的选项栏中，选择项目，然后点预览会生产一个二维码，用管理员微信号扫一扫就可以在真机上看实际效果</div><div class="line">![Paste_Image.png](http://upload-images.jianshu.io/upload_images/1819750-8a621b6004d60464.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line">###实践--跑步小程序。</div><div class="line">####真机运行截图（运行于iPhone7，微信版本：6.3.30）：</div><div class="line"></div><div class="line">![home.jpeg](http://upload-images.jianshu.io/upload_images/1819750-3f78b677cfaad40e.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">![run.jpeg](http://upload-images.jianshu.io/upload_images/1819750-cb5d8b8a7a888612.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line">![slideback.jpeg](http://upload-images.jianshu.io/upload_images/1819750-460c81a2c4a7c1dd.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line">![slide.jpeg](http://upload-images.jianshu.io/upload_images/1819750-7f05267108bf823b.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">####功能：</div><div class="line">能够计算里程、时间、实时获取跑步路径（有些粗糙）</div><div class="line">####思路：</div><div class="line">主要使用了微信小程序的获取位置API```wx.getLocation()```和地图组件```map```。</div><div class="line">首先实现一个计时器进行 计时，通过```wx.getLocation()```获取坐标，把获取到的坐标存在一个数组中，通过坐标每隔一段时间获取里程，进行累加得到总里程，同时也通过坐标点进行连线</div><div class="line">存在的问题：</div><div class="line">1、因为目前找不到在地图上画连线的方法，所以采用了在地图上贴小红点图的方法显示大概跑步路径，路径比较粗糙。</div><div class="line">2、虽然采用了API里面的火星坐标gcj02类型，但是获取的坐标跟国际坐标差不多，依然存在着偏差。</div><div class="line"></div><div class="line">####核心代码：</div><div class="line">我把全部代码放在github上-[weChatApp-Run](https://github.com/alanwangmodify/weChatApp-Run)，可以下载来看看或者先star收藏，我以后还会进行一些优化更新。现在只是一个学习Demo，大家沟通学习，实际应用还需更多优化。</div><div class="line"></div><div class="line">wxml文件布局代码：</div></pre></td></tr></table></figure></p>
+<view class="head" style="flex-direction:row;"><br>    <image class="icon" src="/resources/joyrun.png" mode="aspectFill"><br>    <button bindtap="openLocation">打开位置</button><br>    <button bindtap="starRun">开始跑步</button><br>    <button bindtap="stopRun">暂停跑步</button><br>    <text>\n里程数：km</text><br>    <text>\n\n时间：</text><br></image></view>
+
+<p><view class="mainView"><br>   <map class="mapView" style="width: 100%; height: 375px;" latitude="" longitude="" markers="" covers=""><br>    </map></view></p>
+<p><br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">js文件逻辑代码：</div></pre></td></tr></table></figure></p>
+<p>var countTooGetLocation = 0;<br>var total_micro_second = 0;<br>var starRun = 0;<br>var totalSecond  = 0;<br>var oriMeters = 0.0;<br>/<em> 毫秒级倒计时 </em>/<br>function count_down(that) {</p>
+<pre><code>if (starRun == 0) {
+  return;
+}
+
+if (countTooGetLocation &gt;= 100) {
+  var time = date_format(total_micro_second);
+  that.updateTime(time);
+}
+</code></pre><p>   if (countTooGetLocation &gt;= 5000) { //1000为1s<br>        that.getLocation();<br>        countTooGetLocation = 0;<br>   }   </p>
+<p> setTimeout<br>   setTimeout(function(){<br>  countTooGetLocation += 10;<br>    total_micro_second += 10;<br>  count_down(that);<br>    }<br>    ,10<br>    )<br>}</p>
+<p>// 时间格式化输出，如03:25:19 86。每10ms都会调用一次<br>function date_format(micro_second) {<br>   // 秒数<br>   var second = Math.floor(micro_second / 1000);<br>   // 小时位<br>   var hr = Math.floor(second / 3600);<br>   // 分钟位<br>   var min = fill_zero_prefix(Math.floor((second - hr <em> 3600) / 60));<br>   // 秒位<br> var sec = fill_zero_prefix((second - hr </em> 3600 - min * 60));// equal to =&gt; var sec = second % 60;</p>
+<p> return hr + “:” + min + “:” + sec + “ “;<br>}</p>
+<p>function getDistance(lat1, lng1, lat2, lng2) {<br>    var dis = 0;<br>    var radLat1 = toRadians(lat1);<br>    var radLat2 = toRadians(lat2);<br>    var deltaLat = radLat1 - radLat2;<br>    var deltaLng = toRadians(lng1) - toRadians(lng2);<br>    var dis = 2 <em> Math.asin(Math.sqrt(Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(radLat1) </em> Math.cos(radLat2) <em> Math.pow(Math.sin(deltaLng / 2), 2)));<br>    return dis </em> 6378137;</p>
+<pre><code>function toRadians(d) {  return d * Math.PI / 180;}
+</code></pre><p>} </p>
+<p>function fill_zero_prefix(num) {<br> return num &lt; 10 ? “0” + num : num<br>}</p>
+<p>//<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong><br>//<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></p>
+<p>Page({<br>  data: {<br>    clock: ‘’,<br>    isLocation:false,<br>    latitude: 0,<br>    longitude: 0,<br>    markers: [],<br>    covers: [],<br>    meters: 0.00,<br>    time: “0:00:00”<br>  },</p>
+<p>//<strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong><br>  onLoad:function(options){<br>    // 页面初始化 options为页面跳转所带来的参数<br>    this.getLocation()<br>    console.log(“onLoad”)<br>    count_down(this);<br>  },<br>  //<strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong><br>  openLocation:function (){<br>    wx.getLocation({<br>      type: ‘gcj02’, // 默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标<br>      success: function(res){<br>          wx.openLocation({<br>            latitude: res.latitude, // 纬度，范围为-90~90，负数表示南纬<br>            longitude: res.longitude, // 经度，范围为-180~180，负数表示西经<br>            scale: 28, // 缩放比例<br>          })<br>      },<br>    })<br>  },</p>
+<p>//<strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong><br>  starRun :function () {<br>    if (starRun == 1) {<br>      return;<br>    }<br>    starRun = 1;<br>    count_down(this);<br>    this.getLocation();<br>  },</p>
+<p> //<strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong><br>  stopRun:function () {<br>    starRun = 0;<br>    count_down(this);<br>  },</p>
+<p>//<strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong><br>  updateTime:function (time) {</p>
+<pre><code>var data = this.data;
+data.time = time;
+this.data = data;
+this.setData ({
+  time : time,
+})
+</code></pre><p>  },</p>
+<p>//<strong><strong><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong></strong></strong><br>  getLocation:function () {<br>    var that = this<br>    wx.getLocation({</p>
+<pre><code>  type: &apos;gcj02&apos;, // 默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标
+  success: function(res){
+    console.log(&quot;res----------&quot;)
+    console.log(res)
+
+    //make datas 
+    var newCover = {
+        latitude: res.latitude,
+        longitude: res.longitude,
+        iconPath: &apos;/resources/redPoint.png&apos;,
+      };
+    var oriCovers = that.data.covers;
+
+    console.log(&quot;oriMeters----------&quot;)
+    console.log(oriMeters);
+    var len = oriCovers.length;
+    var lastCover;
+    if (len == 0) {
+      oriCovers.push(newCover);
+    }
+    len = oriCovers.length;
+    var lastCover = oriCovers[len-1];
+
+    console.log(&quot;oriCovers----------&quot;)
+    console.log(oriCovers,len);
+
+    var newMeters = getDistance(lastCover.latitude,lastCover.longitude,res.latitude,res.longitude)/1000;
+
+    if (newMeters &lt; 0.0015){
+        newMeters = 0.0;
+    }
+
+    oriMeters = oriMeters + newMeters; 
+    console.log(&quot;newMeters----------&quot;)
+    console.log(newMeters);
+
+
+    var meters = new Number(oriMeters);
+    var showMeters = meters.toFixed(2);
+
+    oriCovers.push(newCover);
+
+    that.setData({
+      latitude: res.latitude,
+      longitude: res.longitude,
+      markers: [],
+      covers: oriCovers,
+      meters:showMeters,
+    });
+  },
+})
+</code></pre><p>  }</p>
+<p>})</p>
+<p>```</p>
+<p>###五、后语<br>本文是一个快速上手开发的介绍，细节介绍可以查看<a href="https://mp.weixin.qq.com/debug/wxadoc/dev/?t=20161107" target="_blank" rel="external">官方文档</a><br>我的相关全部代码放在github上-<a href="https://github.com/alanwangmodify/weChatApp-Run" target="_blank" rel="external">weChatApp-Run</a></p>
+
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/12/28/xiaochengxu/"
+                    data-title="微信小程序-从零开始制作一个跑步微信小程序"
+                    data-url="https://joyrun.github.io/2016/12/28/xiaochengxu/"
+                    data-images=""
+                    data-content="#前言我已经把全部代码放在github上-weChatApp-Run，可以下载来看看或者先st... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/09/26/ProGuard/" data-toggle="tooltip" data-placement="top" title="正确认识Android代码混淆技术">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/12/28/xiaochengxu/"
+                        data-title="微信小程序-从零开始制作一个跑步微信小程序"
+                        data-url="https://joyrun.github.io/2016/12/28/xiaochengxu/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#其它" title="其它">其它</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

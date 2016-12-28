@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Android单元测试最佳实践，及可测试架构方向改造 - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/08/12/AndroidUnitTest/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('post-bg-2015.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                    </div>
+                    <h1>Android单元测试最佳实践，及可测试架构方向改造</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Wiki on
+                        2016-08-12
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>所有的代码都需要进行测试。每位开发者都会执行某种类型的测试，来查看代码是否可以正常工作。使用单元测试的开发者能够根据需要执行这些测试，以确保新编写的代码可以正常工作并且不会破坏已有的测试。</p>
+<h3 id="单元测试的必要性"><a href="#单元测试的必要性" class="headerlink" title="单元测试的必要性"></a>单元测试的必要性</h3><p>单元测试的主要目的就是验证你的应用程序可以按预期的方式正常运行，以及尽可能地发现错误。尽管功能测试也可以做到这一点，但是单元测试更加强大，并且用途更加丰富，它能做的不仅仅是验证应用程式的正常运行，单元测试还可以：</p>
+<ol>
+<li>带来更高的测试覆盖率</li>
+<li>提高团队效率</li>
+<li>监测衰退和减少调试</li>
+<li>自信地重构</li>
+<li>改进实现</li>
+<li>将预期的行为文档化</li>
+</ol>
+<h3 id="第一个Java单元测试用例"><a href="#第一个Java单元测试用例" class="headerlink" title="第一个Java单元测试用例"></a>第一个Java单元测试用例</h3><p>需要配置依赖JUnit</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">    <span class="function">compile <span class="title">fileTree</span><span class="params">(dir: <span class="string">'libs'</span>, include: [<span class="string">'*.jar'</span>])</span></span></div><div class="line">    testCompile 'junit:junit:4.12'</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>需要测试的两个方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Compute</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> arg0, <span class="keyword">int</span> arg1)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> arg0 + arg1;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">ride</span><span class="params">(<span class="keyword">int</span> arg0, <span class="keyword">int</span> arg1)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> arg0 * arg1;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在类名处右击鼠标，选择<code>Go To</code>  &gt;  <code>Test</code> 或者直接使用快捷键</p>
+<p><img src="AndroidUnitTest/junit_1.png" alt=""></p>
+<p>点击<code>Created New Test…</code>，单元测试的框架有好多种，最常用的是JUnit3和JUnit4，androidTest只支持JUnit3，而JVM两者都支持。</p>
+<p><img src="AndroidUnitTest/junit_2.png" alt=""></p>
+<p>点击ok后会弹出选择创建测试用例的目录，这里有两个选择，androidTest和test，androidTest是运行在Android设备上测试的，test是在jvm上进行测试。我们这里选择test。点击ok，就会在src/test文件夹生成一个单元测试类，项目大体的结构如下：</p>
+<p><img src="AndroidUnitTest/junit_3.png" alt=""></p>
+<p>右击ComputeTest文件，点击<code>Run &#39;ComputeTest&#39;</code>即可运行这个单元测试。</p>
+<p><img src="AndroidUnitTest/junit_4.png" alt=""></p>
+<p>到这里，第一个单元测试就已经完成了，从上图可以看到，1+3我们预测结果是3，实际上是4，所以这个单元测试不通过。</p>
+<h5 id="注释说明"><a href="#注释说明" class="headerlink" title="注释说明"></a>注释说明</h5><ol>
+<li>JUnit注释提供了资源初始化和回收方法：@Before、@BeforeClass、@After和@AfterClass。</li>
+<li>我们添加@Test注释，把这个方法标记为一个单元测试方法。</li>
+</ol>
+<h5 id="断言说明"><a href="#断言说明" class="headerlink" title="断言说明"></a>断言说明</h5><p>用来验证测试结果的方法<code>Assert.assertXXX</code>叫做断言，提供了好多验证方法，Assert.assertEquals()、Assert.assertNotNull()、Assert.assertTrue()、….。</p>
+<h4 id="参数化测试"><a href="#参数化测试" class="headerlink" title="参数化测试"></a>参数化测试</h4><p>Parameterized（参数化）的测试运行器允许你使用不同的参数多次运行同一个测试。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@RunWith</span>(value = Parameterized.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParameterizedTest</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> expected;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> param0;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> param1;</div><div class="line">    <span class="meta">@Parameterized</span>.Parameters</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Collection&lt;Integer[]&gt; getTestParameters() &#123;</div><div class="line">        <span class="keyword">return</span> Arrays.asList(<span class="keyword">new</span> Integer[][]&#123;</div><div class="line">                &#123;<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>&#125;,</div><div class="line">                &#123;<span class="number">4</span>, <span class="number">2</span>, <span class="number">2</span>&#125;,</div><div class="line">                &#123;<span class="number">5</span>, <span class="number">3</span>, <span class="number">3</span>&#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ParameterizedTest</span><span class="params">(<span class="keyword">int</span> expected, <span class="keyword">int</span> param0, <span class="keyword">int</span> param1)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.expected = expected;</div><div class="line">        <span class="keyword">this</span>.param0 = param0;</div><div class="line">        <span class="keyword">this</span>.param1 = param1;</div><div class="line">    &#125;</div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="keyword">int</span> result = Compute.add(param0, param1);<span class="comment">//错误示范</span></div><div class="line">        Assert.assertEquals(expected, result);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p><img src="/Users/Wiki/Pictures/FN2V63AD2J.com.tencent.ScreenCapture2/QQ20160814-8@2x.png" alt=""></p>
+<h4 id="用Suite来组合测试"><a href="#用Suite来组合测试" class="headerlink" title="用Suite来组合测试"></a>用Suite来组合测试</h4><p>JUnit设计Suite的目的就是为了运行一个或者多个测试用例。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@RunWith</span>(Suite.class)</div><div class="line"><span class="meta">@Suite</span>.SuiteClasses(&#123;ComputeTest.class,ParameterizedTest.class&#125;)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AllTest</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="第一个Android单元测试"><a href="#第一个Android单元测试" class="headerlink" title="第一个Android单元测试"></a>第一个Android单元测试</h3><p>上面介绍的是JUnit4的Java单元测试，但是在Android上的单元测试还是有点不同，androidTest不支持Junit4，只能使用JUnit3，也就说无法使用注释，所以我们测试用例必须是test开头才能识别成测试用例。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</div><div class="line">    TextView textView;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        textView = (TextView) findViewById(R.id.text);</div><div class="line">        textView.setText(<span class="string">"Hello World!"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的例子是对textView赋值，下面单元测试判断textView的值是否设置正确，测试代码放在androidTest文件夹，运行该测试用例需要连接手机。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivityTest</span> <span class="keyword">extends</span> <span class="title">ActivityInstrumentationTestCase2</span>&lt;<span class="title">MainActivity</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MainActivityTest</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(MainActivity.class);</div><div class="line">    &#125;</div><div class="line">  	<span class="comment">//务必test开头</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTextView</span><span class="params">()</span></span>&#123;</div><div class="line">        assertEquals(<span class="string">"Hello World!"</span>,getActivity().textView.getText().toString());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h5><ol>
+<li><p>如果项目是Multidex，需要进行如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">defaultConfig &#123;</div><div class="line">    versionCode 1</div><div class="line">    versionName &quot;1.0&quot;</div><div class="line">    ...</div><div class="line">    //如果是multiDex，那么需要配置如下</div><div class="line">    multiDexEnabled true</div><div class="line">    testInstrumentationRunner &quot;com.android.test.runner.MultiDexTestRunner&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ol>
+<h3 id="在JVM运行Android单元测试：Robolectric"><a href="#在JVM运行Android单元测试：Robolectric" class="headerlink" title="在JVM运行Android单元测试：Robolectric"></a>在JVM运行Android单元测试：Robolectric</h3><p>从上面androidTest的例子可以看到，我们运行android的单元测试每次都要编译运行安装apk，效率非常低，我们希望能够在电脑直接运行单元测试，提高测试开发的效率。那么Robolectric测试框架就可以做到了，它通过模拟android的运行环境，直接就可以在JVM上运行，无需手机设备，同时也支持JUnit4。</p>
+<h5 id="配置build-gradle"><a href="#配置build-gradle" class="headerlink" title="配置build.gradle"></a>配置build.gradle</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">    compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])</div><div class="line">    testCompile &apos;junit:junit:4.12&apos;</div><div class="line">    testCompile &quot;org.robolectric:robolectric:3.1.1&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="编写测试用例，放在test文件夹"><a href="#编写测试用例，放在test文件夹" class="headerlink" title="编写测试用例，放在test文件夹"></a>编写测试用例，放在test文件夹</h5><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@RunWith</span>(RobolectricTestRunner.class)</div><div class="line"><span class="meta">@Config</span>(manifest = <span class="string">"src/main/AndroidManifest.xml"</span>,sdk = <span class="number">21</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivityTest</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> MainActivity activity;</div><div class="line">    <span class="meta">@Before</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        activity = Robolectric.setupActivity(MainActivity.class);</div><div class="line">    &#125;</div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTextView</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        assertEquals(<span class="string">"Hello World!"</span>,activity.textView.getText().toString());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用了Robolectric之后，和android相关的代码也可以直接在JVM上运行，无需连接手机，速度很快。</p>
+<h3 id="编写脚手架：回调模式测试"><a href="#编写脚手架：回调模式测试" class="headerlink" title="编写脚手架：回调模式测试"></a>编写脚手架：回调模式测试</h3><p>Android Sync Http例子说明</p>
+<h3 id="编写代码的全新方式：Mock-objects"><a href="#编写代码的全新方式：Mock-objects" class="headerlink" title="编写代码的全新方式：Mock objects"></a>编写代码的全新方式：Mock objects</h3><p>​    Mocks测试技术，支持细颗粒度单元测试，还能迫使你编写优秀的代码。使用Mocks不仅仅是一种单元测试策略，它更是一种编写代码的全新方式，编写代码的全新方式，编写代码的全新方式，重要的事情说三遍。</p>
+<p>​    它最大的特点就是“隔离测试”，它可以帮助我们先测试一部分的代码，无须等到其它代码全部完成。还记得一位同事曾经吐槽，也是我们一直的比较难改变的事情，就是服务端API还没有实现，我们就需要做客户端开发，无法与服务端进行交互，开发难以进行顺利，利用Mocks，就可以很好解决了这个问题，编写Mocks类，模拟HttpClient网络请求，无须等待服务API实现就可以把除了网络层外的全部逻辑进行测试。</p>
+<h3 id="Mock框架：Mockito"><a href="#Mock框架：Mockito" class="headerlink" title="Mock框架：Mockito"></a>Mock框架：Mockito</h3><p>使用Mock objects方式进行测试就意味着我们必须编写大量的Mock类，这效率太低了，程序员都不爱干，我们可以使用Mockito框架来帮我们减轻工作。</p>
+<h3 id="怎样的架构适合单元测试？"><a href="#怎样的架构适合单元测试？" class="headerlink" title="怎样的架构适合单元测试？"></a>怎样的架构适合单元测试？</h3><h4 id="MVP改造"><a href="#MVP改造" class="headerlink" title="MVP改造"></a>MVP改造</h4><h4 id="RxJava怎么测试"><a href="#RxJava怎么测试" class="headerlink" title="RxJava怎么测试"></a>RxJava怎么测试</h4><h4 id="ORM数据库怎么测试"><a href="#ORM数据库怎么测试" class="headerlink" title="ORM数据库怎么测试"></a>ORM数据库怎么测试</h4><h4 id="Dagger2对单元测试影响"><a href="#Dagger2对单元测试影响" class="headerlink" title="Dagger2对单元测试影响"></a>Dagger2对单元测试影响</h4>
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/08/12/AndroidUnitTest/"
+                    data-title="Android单元测试最佳实践，及可测试架构方向改造"
+                    data-url="https://joyrun.github.io/2016/08/12/AndroidUnitTest/"
+                    data-images="https://joyrun.github.io/2016/08/12/AndroidUnitTest/post-bg-2015.jpg"
+                    data-content="所有的代码都需要进行测试。每位开发者都会执行某种类型的测试，来查看代码是否可以正常工作。使用单... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/14/TDD/" data-toggle="tooltip" data-placement="top" title="单元测试进阶：理解测试驱动开发（TDD）">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/08/AndroidMemoryLeak/" data-toggle="tooltip" data-placement="top" title="利用Android Studio、MAT对Android进行内存泄漏检测">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/08/12/AndroidUnitTest/"
+                        data-title="Android单元测试最佳实践，及可测试架构方向改造"
+                        data-url="https://joyrun.github.io/2016/08/12/AndroidUnitTest/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

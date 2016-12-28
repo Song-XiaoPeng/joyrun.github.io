@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+    	{
+    	"appID": "PZX8G85BFY.com.linkedtech.joyRunner",
+    	"paths": ["/open/*"]
+    	}
+    ]
+  }
+}

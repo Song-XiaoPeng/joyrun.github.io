@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          正确认识Android代码混淆技术 - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/09/26/ProGuard/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                    </div>
+                    <h1>正确认识Android代码混淆技术</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Wiki on
+                        2016-09-26
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>Android通常是使用Java语言编写，同时Java是非常容易被反编译的语言，一旦发布出去就基本宣布开源了。为了保证代码的安全性，对代码混淆是非常的重要。从eclipse到Android Studio，很多人对代码混淆并不了解，只是仅仅把混淆用起来而已。</p>
+<h4 id="ProGuard"><a href="#ProGuard" class="headerlink" title="ProGuard"></a>ProGuard</h4><p>ProGuard是一个压缩、优化和混淆Java字节码文件的免费的工具，它可以删除无用的类、字段、方法和属性。可以删除没用的注释，最大限度地优化字节码文件。它还可以使用简短的无意义的名称来重命名已经存在的类、字段、方法和属性。常常用于Android开发用于混淆最终的项目，增加项目被反编译的难度。</p>
+<h4 id="Android自带的混淆规则"><a href="#Android自带的混淆规则" class="headerlink" title="Android自带的混淆规则"></a>Android自带的混淆规则</h4><p>Android的SDK带有两个混淆规则文件，proguard-android.txt和proguard-android-optimize.txt，后面会介绍他们之间的区别，他们都是存放在sdk的tools/proguard文件夹中，如果有使用混淆，建议认真阅读这两个文件，非常的重要。</p>
+<h3 id="Keep-Options"><a href="#Keep-Options" class="headerlink" title="Keep Options"></a>Keep Options</h3><h5 id="keep"><a href="#keep" class="headerlink" title="-keep"></a>-keep</h5><p>指定类和类的成员（属性和方法）不被混淆。</p>
+<h5 id="keepclassmembers"><a href="#keepclassmembers" class="headerlink" title="-keepclassmembers"></a>-keepclassmembers</h5><p> 保护指定类的成员（属性和方法）不被混淆。</p>
+<h5 id="keepclasseswithmembers"><a href="#keepclasseswithmembers" class="headerlink" title="-keepclasseswithmembers"></a>-keepclasseswithmembers</h5><p>保护指定的类和类的成员，但条件是所有指定的类和类成员是要存在。 </p>
+<h5 id="keepnames"><a href="#keepnames" class="headerlink" title="-keepnames"></a>-keepnames</h5><p>保护指定的类和类的成员的名称（保证他们不会压缩步骤中删除） </p>
+<h5 id="keepclassmembernames"><a href="#keepclassmembernames" class="headerlink" title="-keepclassmembernames"></a>-keepclassmembernames</h5><p>保护指定的类的成员的名称（保证他们不会压缩步骤中删除） </p>
+<h5 id="keepclasseswithmembernames"><a href="#keepclasseswithmembernames" class="headerlink" title="-keepclasseswithmembernames"></a>-keepclasseswithmembernames</h5><p>保护指定的类和类的成员的名称，如果所有指定的类成员出席（在压缩步骤之后） </p>
+<h3 id="常见案例"><a href="#常见案例" class="headerlink" title="常见案例"></a>常见案例</h3><h5 id="避免反射Javabean类被混淆"><a href="#避免反射Javabean类被混淆" class="headerlink" title="避免反射Javabean类被混淆"></a>避免反射Javabean类被混淆</h5><p>我们的项目中通常都会用到Gson和ORM数据库，他们都是通过反射来系列化和反系列化对象，一旦被混淆，字段名和方法名都改变，就会运行出错。避免这种javabean类被混淆通常有两种方法，第一种就是指定包名下所有的类都不混淆，通常javabean类都是放在同一个文件夹。第二种方式就是指定继承或实现某个类或接口的类不混淆，比如Serializable、Parcelable。</p>
+<p>指定包名下类不被混淆</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">-keep class co.runner.app.bean.** &#123;*;&#125;</div></pre></td></tr></table></figure>
+<p>指定实现某接口类不被混淆</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">-keep class * implements java.io.Serializable &#123; *; &#125;</div><div class="line">-keep class * implements android.os.Parcelable &#123; *; &#125;</div></pre></td></tr></table></figure>
+<h5 id="指定方法不混淆：避免属性动画的方法被混淆"><a href="#指定方法不混淆：避免属性动画的方法被混淆" class="headerlink" title="指定方法不混淆：避免属性动画的方法被混淆"></a>指定方法不混淆：避免属性动画的方法被混淆</h5><p>属性动画也是通过反射来实现，如果指定整个类都不混淆是非常的不划算。我们可以仅仅指定某个方法不混淆。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">-keepclassmembers class com.app.MainActivity &#123;</div><div class="line">	void setHeight(***);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="避免注解被混淆"><a href="#避免注解被混淆" class="headerlink" title="避免注解被混淆"></a>避免注解被混淆</h5><p>EventBus3.0之后的版本是通过注解来注册接收者，那么这些类也是不应该被混淆的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">#避免所有的注解被混淆</div><div class="line">-keep interface * extends java.lang.annotation.Annotation &#123; *; &#125;</div><div class="line">#避免带有@Subscribe注解的方法被混淆</div><div class="line">-keepclassmembers class ** &#123;</div><div class="line">    @org.greenrobot.eventbus.Subscribe &lt;methods&gt;;</div><div class="line">&#125;</div><div class="line">-keep enum org.greenrobot.eventbus.ThreadMode &#123; *; &#125;</div><div class="line">-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent &#123;</div><div class="line">    &lt;init&gt;(java.lang.Throwable);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="通过注解-Keep避免被混淆"><a href="#通过注解-Keep避免被混淆" class="headerlink" title="通过注解@Keep避免被混淆"></a>通过注解@Keep避免被混淆</h3><p>我们查看proguard-android.txt和proguard-android-optimize.txt可以发现，默认的混淆规则中包含了@Keep，那么我们就可以通过注解的方式，避免某个类，某个方法或者某个字段被混淆，无需一一在规则文件指定，比如上面的属性动画方法就可以通过@Keep来避免被混淆。</p>
+<p>WebChromeClient类内的方法都是不建议混淆的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Keep</div><div class="line">public class MyWebChromeClient extends WebChromeClient&#123;</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>WebView的JavascriptInterface也是不能被混淆的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class MyJavascriptInterface&#123;</div><div class="line">  @Keep</div><div class="line">  @android.webkit.JavascriptInterface</div><div class="line">  public void onShare(String json) &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="optimize"><a href="#optimize" class="headerlink" title="optimize"></a>optimize</h3><p>optimize可以对代码进行优化，删除无用的代码，甚至可以按照要求去删除代码，比如生产环境的Log日志，可以最大限度地优化字节码文件。对ProGuard来说，没有被调用的代码就是无用代码，我们有很多的代码是通过反射调用，所以使用optimize一定要通过大量的测试，以确保没有问题。proguard-android.txt混淆规则默认是-dontoptimize，意思就是不打开optimize。如果我们需要使用optimize，那么就需要使用proguard-android-optimize.txt规则。</p>
+<h4 id="过滤Log日志"><a href="#过滤Log日志" class="headerlink" title="过滤Log日志"></a>过滤Log日志</h4><p>通常在正式发布版本中，我们并不需要输出Log日志，通过混淆optimize技术可以在混淆过程中删除Log代码，可以避免通过Log看到一些私密的数据。如果需要过滤Log日志，那么就必须使用proguard-android-optimize.txt规则，并且不能有<code>-dontoptimize</code>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">-assumenosideeffects class android.util.Log &#123;</div><div class="line">    public static *** v(...);</div><div class="line">    public static *** d(...);</div><div class="line">    public static *** i(...);</div><div class="line">    public static *** w(...);</div><div class="line">    public static *** e(...);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="Gradle配置"><a href="#Gradle配置" class="headerlink" title="Gradle配置"></a>Gradle配置</h5><p>通过Android Studio创建一个项目就会默认生成了混淆对应的配置，只是默认是关闭的，需要设置minifyEnabled=true才能生效，其中的proguardFiles是一个数组的函数，支持多个混淆规则文件，其中proguard-android.txt是默认的，推荐使用。我们只要修改module根目录的proguard-rules.pro来增加混淆规则，当前，我们还可以增加多几个这样的问题。比如上述的<code>过滤Log日志</code>可以放在单独的文件中，仅仅对发布版本使用，而我们发布的内测版本还是打开log。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">buildTypes &#123;</div><div class="line">    release &#123;</div><div class="line">        minifyEnabled true</div><div class="line">        proguardFiles getDefaultProguardFile(&apos;proguard-android-optimize.txt&apos;), &apos;proguard-rules.pro&apos;,&apos;proguard-rules-nolog.pro&apos;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>applymapping使用旧的Mapping规则</p>
+<p>参考的混淆规则</p>
+
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/09/26/ProGuard/"
+                    data-title="正确认识Android代码混淆技术"
+                    data-url="https://joyrun.github.io/2016/09/26/ProGuard/"
+                    data-images=""
+                    data-content="Android通常是使用Java语言编写，同时Java是非常容易被反编译的语言，一旦发布出去就... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/12/28/xiaochengxu/" data-toggle="tooltip" data-placement="top" title="微信小程序-从零开始制作一个跑步微信小程序">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/14/TDD/" data-toggle="tooltip" data-placement="top" title="单元测试进阶：理解测试驱动开发（TDD）">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/09/26/ProGuard/"
+                        data-title="正确认识Android代码混淆技术"
+                        data-url="https://joyrun.github.io/2016/09/26/ProGuard/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

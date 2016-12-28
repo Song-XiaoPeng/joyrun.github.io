@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Android快速持久化框架 AptPreferences - 悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/2016/07/19/AptPreferences/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#我的开源项目" title="我的开源项目">我的开源项目</a>
+                        
+                    </div>
+                    <h1>Android快速持久化框架 AptPreferences</h1>
+                    <h2 class="subheading">面向对象快速持久化框架</h2>
+                    <span class="meta">
+                        Posted by Wiki on
+                        2016-07-19
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePreferences的使用，减少代码的编写。可以非常快速地保存基本类型和对象。AptPreferences是基于APT技术实现，在编译期间实现代码的生成，支持混淆。根据不同的用户区分持久化信息。</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>把通过的Javabean变成SharedPreferences操作类</li>
+<li>支持保存基本类型及对象</li>
+<li>支持根据不同的用户区分持久化信息。</li>
+</ol>
+<h3 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h3><h5 id="定义javabean类"><a href="#定义javabean类" class="headerlink" title="定义javabean类"></a>定义javabean类</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@AptPreferences</div><div class="line">public class Settings &#123;</div><div class="line">   private long loginTime;</div><div class="line">   private LoginUser loginUser;</div><div class="line">    // get、set方法</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">//初始化</div><div class="line">AptPreferencesManager.init(this, null);</div><div class="line">// 保存信息</div><div class="line">SettingsPreference.get().setLoginTime(System.currentTimeMillis());</div><div class="line">SettingsPreference.get().set(new LoginUser(&quot;Wiki&quot;));</div><div class="line">// 获取信息</div><div class="line">long loginTime = SettingsPreference.get().getLoginTime();</div><div class="line">LoginUser loginUser = SettingsPreference.get().getLoginUser();</div></pre></td></tr></table></figure>
+<p>从上面的简单例子可以看到，我们需要做SharePreferences持久化，仅仅定义一个简单的javabean类（Settings）并添加注解即可，这个框架会根据javabean生成带有持久化功能的SettingsPreference类，通过这个类就可以非常简单去保持或者获取数据，大大简化了SharePreferences的使用，也可以保持对象。</p>
+<h3 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h3><p><a href="https://github.com/joyrun/AptPreferences" target="_blank" rel="external">https://github.com/joyrun/AptPreferences</a></p>
+<h3 id="一、配置项目"><a href="#一、配置项目" class="headerlink" title="一、配置项目"></a>一、配置项目</h3><h5 id="配置项目根目录-build-gradle"><a href="#配置项目根目录-build-gradle" class="headerlink" title="配置项目根目录 build.gradle"></a>配置项目根目录 build.gradle</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">buildscript &#123;</div><div class="line">    repositories &#123;</div><div class="line">        jcenter()</div><div class="line">    &#125;</div><div class="line">    dependencies &#123;</div><div class="line">        classpath &quot;com.android.tools.build:gradle:1.5.0&quot;</div><div class="line">        classpath &apos;com.neenbedankt.gradle.plugins:android-apt:1.8&apos;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">allprojects &#123;</div><div class="line">    repositories &#123;</div><div class="line">        jcenter()</div><div class="line">        maven &#123; url &quot;https://jitpack.io&quot; &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="配置app-build-gradle"><a href="#配置app-build-gradle" class="headerlink" title="配置app build.gradle"></a>配置app build.gradle</h5><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">apply plugin: &apos;com.android.application&apos;</div><div class="line">apply plugin: &apos;com.neenbedankt.android-apt&apos;</div><div class="line"></div><div class="line">//...</div><div class="line">dependencies &#123;</div><div class="line">    compile &apos;com.github.joyrun.AptPreferences:aptpreferences:0.4.4&apos;</div><div class="line">    apt &apos;com.github.joyrun.AptPreferences:aptpreferences-compiler:0.4.4&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="二、定义持久化Javabean"><a href="#二、定义持久化Javabean" class="headerlink" title="二、定义持久化Javabean"></a>二、定义持久化Javabean</h3><p>使用方法非常简单，先编写一个普通带getter、setter的javabean类，在类头部添加@AptPreferences即可：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">@AptPreferences</div><div class="line">public class Settings &#123;</div><div class="line">   private long lastOpenAppTimeMillis;</div><div class="line">   // 使用commit提交，默认是使用apply提交，配置默认值</div><div class="line">   @AptField(commit = true)</div><div class="line">   private String useLanguage = &quot;zh&quot;;</div><div class="line">   // 使用preferences的方式保存</div><div class="line">   @AptField(preferences = true)</div><div class="line">   private Push push;</div><div class="line">   // 使用对象的方式保存</div><div class="line">   private LoginUser loginUser;</div><div class="line">   // 不持久化该字段，仅仅保留在内存</div><div class="line">   @AptField(save = false)</div><div class="line">   private long lastActionTimeMillis;</div><div class="line"></div><div class="line">    // ...</div><div class="line"></div><div class="line">    // get、set方法必须写</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="三、注解及使用说明"><a href="#三、注解及使用说明" class="headerlink" title="三、注解及使用说明"></a>三、注解及使用说明</h3><p>我们提供了两个注解@AptPreferences和@AptField(commit = false,save = true,preferences = false)。</p>
+<h6 id="AptPreferences"><a href="#AptPreferences" class="headerlink" title="@AptPreferences"></a>@AptPreferences</h6><p>被注解的javabean必须为字段实现setter和getter方法；</p>
+<h6 id="AptField"><a href="#AptField" class="headerlink" title="@AptField"></a>@AptField</h6><p>AptField有三个参数可以配置。</p>
+<ol>
+<li><p>commit：可以配置使用commit还是apply持久化，默认是apply，需要在一些需要立刻保存到文件的可以使用commit方式，比如在退出APP时保存退出的时间。</p>
+</li>
+<li><p>save：用来声明是否需要持久化这个字段。</p>
+</li>
+<li><p>preferences：这个属性仅仅适用于对象类型的字段，用来声明这个是以对象的方式保存，还是以preferences的方式保存。如果是true，就可以通过settingsPreference.getPush().isOpenPush()的方式存取。</p>
+</li>
+<li>global：默认是true，如果设置为false时，和AptPreferencesManager.setUserInfo()配合，可以为不同的用户进行持久化，达到每个用户有不用的设置。</li>
+</ol>
+<h3 id="四、初始化"><a href="#四、初始化" class="headerlink" title="四、初始化"></a>四、初始化</h3><p>使用之前要进行初始化，建议在Application进行初始化，需要需要保存对象，还需要实现对象的解析器，这里使用Fastjson作为实例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">public class MyApplication extends Application&#123;</div><div class="line">   @Override</div><div class="line">   public void onCreate() &#123;</div><div class="line">       super.onCreate();</div><div class="line">       AptPreferencesManager.init(this, new AptParser() &#123;</div><div class="line">           @Override</div><div class="line">           public Object deserialize(Class clazz, String text) &#123;</div><div class="line">               return JSON.parseObject(text,clazz);</div><div class="line">           &#125;</div><div class="line">           @Override</div><div class="line">           public String serialize(Object object) &#123;</div><div class="line">               return JSON.toJSONString(object);</div><div class="line">           &#125;</div><div class="line">       &#125;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="五、根据不同的用户设置"><a href="#五、根据不同的用户设置" class="headerlink" title="五、根据不同的用户设置"></a>五、根据不同的用户设置</h3><p>如果app支持多用户登录，需要根据不用的用户持久化，可以通过下面方法配置。再通过@AptField(global = false)，就可以针对某个字段跟随用户不同进行持久化。<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">AptPreferencesManager.setUserInfo(&quot;uid&quot;);</div></pre></td></tr></table></figure></p>
+<h3 id="六、代码调用"><a href="#六、代码调用" class="headerlink" title="六、代码调用"></a>六、代码调用</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">// 普通类型保存</div><div class="line">SettingsPreferences.get().setUseLanguage(&quot;zh&quot;);</div><div class="line">SettingsPreferences.get().setLastOpenAppTimeMillis(System.currentTimeMillis());</div><div class="line">// 对象类型保存</div><div class="line">Settings.LoginUser loginUser = new Settings.LoginUser();</div><div class="line">loginUser.setUsername(&quot;username&quot;);</div><div class="line">loginUser.setPassword(&quot;password&quot;);</div><div class="line">SettingsPreferences.get().setLoginUser(loginUser);</div><div class="line">// 对象类型带 @AptField(preferences = true) 注解的保存，相当于把 push相关的放在一个分类</div><div class="line">SettingsPreferences.get().getPush().setOpenPush(true);</div><div class="line"></div><div class="line"></div><div class="line">// 获取</div><div class="line">String useLanguage = settingsPreference.getUseLanguage();</div><div class="line">Settings.LoginUser loginUser1 = settingsPreference.getLoginUser();</div><div class="line">boolean openPush = settingsPreference.getPush().isOpenPush();</div></pre></td></tr></table></figure>
+<h3 id="七、默认值"><a href="#七、默认值" class="headerlink" title="七、默认值"></a>七、默认值</h3><p>很多时候我们需要在没有获取到值时使用默认值，SharedPreferences本身也是具备默认值的，所以我们也是支持默认值配置。分析生成的代码可以看到：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">@Override</div><div class="line">public long getLastOpenAppTimeMillis() &#123;</div><div class="line">   return mPreferences.getLong(&quot;lastOpenAppTimeMillis&quot;, super.getLastOpenAppTimeMillis());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果没有获取到值，会调用父类的方法，那么就可以通过这个方式配置默认值：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">@AptPreferences</div><div class="line">public class Settings &#123;</div><div class="line">   // 使用commit提交，默认是使用apply提交，配置默认值</div><div class="line">   @AptField(commit = true)</div><div class="line">   private String useLanguage = &quot;zh&quot;;</div><div class="line"></div><div class="line">   // ...</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="八、详细转换代码"><a href="#八、详细转换代码" class="headerlink" title="八、详细转换代码"></a>八、详细转换代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">@AptPreferences</div><div class="line">public class Settings &#123;</div><div class="line">   private long lastOpenAppTimeMillis;</div><div class="line">   // 使用commit提交，默认是使用apply提交，配置默认值</div><div class="line">   @AptField(commit = true)</div><div class="line">   private String useLanguage = &quot;zh&quot;;</div><div class="line">   // 使用preferences的方式保存</div><div class="line">   @AptField(preferences = true)</div><div class="line">   private Push push;</div><div class="line">   // 使用对象的方式保存</div><div class="line">   private LoginUser loginUser;</div><div class="line">   // 不持久化该字段，仅仅保留在内存</div><div class="line">   @AptField(save = false)</div><div class="line">   private long lastActionTimeMillis;</div><div class="line">   public long getLastActionTimeMillis() &#123;</div><div class="line">       return lastActionTimeMillis;</div><div class="line">   &#125;</div><div class="line">   public void setLastActionTimeMillis(long lastActionTimeMillis) &#123;</div><div class="line">       this.lastActionTimeMillis = lastActionTimeMillis;</div><div class="line">   &#125;</div><div class="line">   public LoginUser getLoginUser() &#123;</div><div class="line">       return loginUser;</div><div class="line">   &#125;</div><div class="line">   public void setLoginUser(LoginUser loginUser) &#123;</div><div class="line">       this.loginUser = loginUser;</div><div class="line">   &#125;</div><div class="line">   public long getLastOpenAppTimeMillis() &#123;</div><div class="line">       return lastOpenAppTimeMillis;</div><div class="line">   &#125;</div><div class="line">   public void setLastOpenAppTimeMillis(long lastOpenAppTimeMillis) &#123;</div><div class="line">       this.lastOpenAppTimeMillis = lastOpenAppTimeMillis;</div><div class="line">   &#125;</div><div class="line">   public String getUseLanguage() &#123;</div><div class="line">       return useLanguage;</div><div class="line">   &#125;</div><div class="line">   public void setUseLanguage(String useLanguage) &#123;</div><div class="line">       this.useLanguage = useLanguage;</div><div class="line">   &#125;</div><div class="line">   public Push getPush() &#123;</div><div class="line">       return push;</div><div class="line">   &#125;</div><div class="line">   public void setPush(Push push) &#123;</div><div class="line">       this.push = push;</div><div class="line">   &#125;</div><div class="line">   public static class Push &#123;</div><div class="line">       private boolean openPush;</div><div class="line">       private boolean vibrate;</div><div class="line">       private boolean voice;</div><div class="line">       public boolean isOpenPush() &#123;</div><div class="line">           return openPush;</div><div class="line">       &#125;</div><div class="line">       public void setOpenPush(boolean openPush) &#123;</div><div class="line">           this.openPush = openPush;</div><div class="line">       &#125;</div><div class="line">       public boolean isVibrate() &#123;</div><div class="line">           return vibrate;</div><div class="line">       &#125;</div><div class="line">       public void setVibrate(boolean vibrate) &#123;</div><div class="line">           this.vibrate = vibrate;</div><div class="line">       &#125;</div><div class="line">       public boolean isVoice() &#123;</div><div class="line">           return voice;</div><div class="line">       &#125;</div><div class="line">       public void setVoice(boolean voice) &#123;</div><div class="line">           this.voice = voice;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">   public static class LoginUser implements Serializable&#123;</div><div class="line">       public String username;</div><div class="line">       public String password;</div><div class="line">       public String getUsername() &#123;</div><div class="line">           return username;</div><div class="line">       &#125;</div><div class="line">       public void setUsername(String username) &#123;</div><div class="line">           this.username = username;</div><div class="line">       &#125;</div><div class="line">       public String getPassword() &#123;</div><div class="line">           return password;</div><div class="line">       &#125;</div><div class="line">       public void setPassword(String password) &#123;</div><div class="line">           this.password = password;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>实际上就是根据上面的代码自动生成带有持久化的代码，可以在这里可以找到</p>
+<blockquote>
+<p>app/build/generated/source/apt/debug</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">public final class SettingsPreferences extends Settings &#123;</div><div class="line">   public static final Map&lt;String, SettingsPreferences&gt; sMap = new java.util.HashMap&lt;&gt;();</div><div class="line">   private final SharedPreferences.Editor mEdit;</div><div class="line">   private final SharedPreferences mPreferences;</div><div class="line">   private final String mName;</div><div class="line">   public SettingsPreferences(String name) &#123;</div><div class="line">       mPreferences = AptPreferencesManager.getContext().getSharedPreferences(&quot;Settings_&quot; + name, 0);</div><div class="line">       mEdit = mPreferences.edit();</div><div class="line">       this.mName = name;</div><div class="line">       this.setPush(new PushPreferences());</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public Settings.LoginUser getLoginUser() &#123;</div><div class="line">       String text = mPreferences.getString(&quot;loginUser&quot;, null);</div><div class="line">       Object object = null;</div><div class="line">       if (text != null) &#123;</div><div class="line">           object = AptPreferencesManager.getAptParser().deserialize(com.thejoyrun.aptpreferences.Settings.LoginUser.class, text);</div><div class="line">       &#125;</div><div class="line">       if (object != null) &#123;</div><div class="line">           return (com.thejoyrun.aptpreferences.Settings.LoginUser) object;</div><div class="line">       &#125;</div><div class="line">       return super.getLoginUser();</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public void setLoginUser(Settings.LoginUser loginUser) &#123;</div><div class="line">       mEdit.putString(&quot;loginUser&quot;, AptPreferencesManager.getAptParser().serialize(loginUser)).apply();</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public long getLastOpenAppTimeMillis() &#123;</div><div class="line">       return mPreferences.getLong(&quot;lastOpenAppTimeMillis&quot;, super.getLastOpenAppTimeMillis());</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public void setLastOpenAppTimeMillis(long lastOpenAppTimeMillis) &#123;</div><div class="line">       mEdit.putLong(&quot;lastOpenAppTimeMillis&quot;, lastOpenAppTimeMillis).apply();</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public String getUseLanguage() &#123;</div><div class="line">       return mPreferences.getString(&quot;useLanguage&quot;, super.getUseLanguage());</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public void setUseLanguage(String useLanguage) &#123;</div><div class="line">       mEdit.putString(&quot;useLanguage&quot;, useLanguage).commit();</div><div class="line">   &#125;</div><div class="line">   public static SettingsPreferences get(String name) &#123;</div><div class="line">       if (sMap.containsKey(name)) &#123;</div><div class="line">           return sMap.get(name);</div><div class="line">       &#125;</div><div class="line">       synchronized (sMap) &#123;</div><div class="line">           if (!sMap.containsKey(name)) &#123;</div><div class="line">               SettingsPreferences preferences = new SettingsPreferences(name);</div><div class="line">               sMap.put(name, preferences);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">       return sMap.get(name);</div><div class="line">   &#125;</div><div class="line">   public static SettingsPreferences get() &#123;</div><div class="line">       return get(&quot;&quot;);</div><div class="line">   &#125;</div><div class="line">   public void clear() &#123;</div><div class="line">       mEdit.clear().commit();</div><div class="line">       sMap.remove(mName);</div><div class="line">   &#125;</div><div class="line">   public static void clearAll() &#123;</div><div class="line">       java.util.Set&lt;String&gt; keys = sMap.keySet();</div><div class="line">       for (String key : keys) &#123;</div><div class="line">           sMap.get(key).clear();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">   private class PushPreferences extends Settings.Push &#123;</div><div class="line">       @Override</div><div class="line">       public boolean isOpenPush() &#123;</div><div class="line">           return mPreferences.getBoolean(&quot;Push.openPush&quot;, super.isOpenPush());</div><div class="line">       &#125;</div><div class="line">       @Override</div><div class="line">       public void setOpenPush(boolean openPush) &#123;</div><div class="line">           mEdit.putBoolean(&quot;Push.openPush&quot;, openPush).apply();</div><div class="line">       &#125;</div><div class="line">       @Override</div><div class="line">       public boolean isVibrate() &#123;</div><div class="line">           return mPreferences.getBoolean(&quot;Push.vibrate&quot;, super.isVibrate());</div><div class="line">       &#125;</div><div class="line">       @Override</div><div class="line">       public void setVibrate(boolean vibrate) &#123;</div><div class="line">           mEdit.putBoolean(&quot;Push.vibrate&quot;, vibrate).apply();</div><div class="line">       &#125;</div><div class="line">       @Override</div><div class="line">       public boolean isVoice() &#123;</div><div class="line">           return mPreferences.getBoolean(&quot;Push.voice&quot;, super.isVoice());</div><div class="line">       &#125;</div><div class="line">       @Override</div><div class="line">       public void setVoice(boolean voice) &#123;</div><div class="line">           mEdit.putBoolean(&quot;Push.voice&quot;, voice).apply();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+
+                <hr>
+
+                
+                <!-- 多说 Share start -->
+                </style>
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="2016/07/19/AptPreferences/"
+                    data-title="Android快速持久化框架 AptPreferences"
+                    data-url="https://joyrun.github.io/2016/07/19/AptPreferences/"
+                    data-images=""
+                    data-content="AptPreferences是基于面向对象设计的快速持久化框架，目的是为了简化SharePre... | 悦跑圈技术团队的博客  | Joyrun&#39;s Blog " >
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/07/21/opensource/" data-toggle="tooltip" data-placement="top" title="利用jitpack.io发布Android、Java项目，通过gradle、maven方式引用">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/07/19/AptHelloWorld/" data-toggle="tooltip" data-placement="top" title="Android APT（编译时代码生成）最佳实践">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="2016/07/19/AptPreferences/"
+                        data-title="Android快速持久化框架 AptPreferences"
+                        data-url="https://joyrun.github.io/2016/07/19/AptPreferences/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#我的开源项目" title="我的开源项目">我的开源项目</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'taoweiji';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          悦跑圈技术团队的博客  | Joyrun&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://joyrun.github.io/testNative.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="/img/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">悦跑圈技术团队</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>悦跑圈技术团队</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">代码改变世界</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+            
+                <!DOCTYPE>
+<html>
+<header>
+	<title>title</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=375">
+</header>
+<body>
+	
+
+<p>Android Javascript接口</p>
+<p> <a href="javascript: window.joyrun.onMenuShare("{\"title\": \"title\",\"desc\": \"desc\",\"link\": \"http://www.thejoyrun.com\",\"imgUrl\": \"http://www.thejoyrun.com/img/logo.png?t=403\"}")" target="_blank" rel="external">Android:设置分享内容</a></p>
+<p> <a href="javascript: window.joyrun_onMenuShare("{\"title\": \"title\",\"desc\": \"desc\",\"link\": \"http://www.thejoyrun.com\",\"imgUrl\": \"http://www.thejoyrun.com/img/logo.png?t=403\"}")" target="_blank" rel="external">UIWebView:设置分享内容</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.joyrun_onMenuShare.postMessage("{\"title\": \"title\",\"desc\": \"desc\",\"link\": \"http://www.thejoyrun.com\",\"imgUrl\": \"http://www.thejoyrun.com/img/logo.png?t=403\"}")" target="_blank" rel="external">WKWebView:设置分享内容</a></p>
+
+<br>
+<p> <a href="javascript: window.joyrun.showShareDialog()" target="_blank" rel="external">Android:显示分享对话框</a></p>
+<p> <a href="javascript: window.showShareDialog()" target="_blank" rel="external">UIWebView:显示分享对话框</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.showShareDialog.postMessage("showShareDialog")" target="_blank" rel="external">WKWebView:显示分享对话框</a></p>
+
+
+<br>
+<p> <a href="javascript: window.joyrun.setClipboard("设置粘贴板")" target="_blank" rel="external">Android:设置粘贴板</a></p>
+<p> <a href="javascript: window.setClipboard("设置粘贴板")" target="_blank" rel="external">UIWebView:设置粘贴板</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.setClipboard.postMessage("设置粘贴板")" target="_blank" rel="external">WKWebView:设置粘贴板</a></p>
+
+
+
+
+<br>
+<p> <a href="javascript: window.joyrun.updateTitle("{\"title\": \"设置title\"}")" target="_blank" rel="external">Android:设置Title</a></p>
+<p> <a href="javascript: window_joyrun.updateTitle("{\"title\": \"设置title\"}")" target="_blank" rel="external">UIWebView:设置Title</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.joyrun_updateTitle.postMessage("{\"title\": \"设置title\"}")" target="_blank" rel="external">WKWebView:设置Title</a></p>
+
+
+<br>
+<p> <a href="javascript: window.joyrun.showShareButton("{\"show\":1}")" target="_blank" rel="external">Android:显示分享按钮</a></p>
+<p> <a href="javascript: window.joyrun_showShareButton("{\"show\":1}")" target="_blank" rel="external">UIWebView:显示分享按钮</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.joyrun_showShareButton.postMessage("{\"show\":1}")" target="_blank" rel="external">WKWebView:显示分享按钮</a></p>
+
+
+
+
+<br>
+<p> <a href="javascript: window.joyrun.showShareButton("{\"show\":0}")" target="_blank" rel="external">Android:隐藏分享按钮</a></p>
+<p> <a href="javascript: window.joyrun_showShareButton("{\"show\":0}")" target="_blank" rel="external">UIWebView:隐藏分享按钮</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.joyrun_showShareButton.postMessage("{\"show\":0}")" target="_blank" rel="external">WKWebView:隐藏分享按钮</a></p>
+
+
+<br>
+<p> <a href="javascript: window.joyrun_updateBackButtons()" target="_blank" rel="external">UIWebView:刷新回退按钮</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.joyrun_updateBackButtons()" target="_blank" rel="external">WKWebView:刷新回退按钮</a></p>
+
+
+<br>
+<p> <a href="javascript: window.joyrun_updateCookie("{\"ypcookieUserInfo\":\"{\\\"address\\\":{\\\"province\\\":\\\"北京\\\",\\\"district\\\":\\\"东城区\\\",\\\"address\\\":\\\"ss\\\",\\\"zipcode\\\":\\\"\\\",\\\"country\\\":\\\"\\\",\\\"city\\\":\\\"北京\\\"},\\\"name\\\":\\\"s\\\",\\\"phone\\\":\\\"s\\\"}\",\"ypcookie\":\"sid=3515ddc3bde7578304d4117ae8738161&uid=11312068\",\"ypcookieShoppingCart\":\"{\\\"22\\\":[{\\\"type\\\":1,\\\"skuId\\\":9001208,\\\"quantity\\\":3,\\\"salesRuleId\\\":100040},{\\\"type\\\":1,\\\"skuId\\\":9001210,\\\"quantity\\\":1,\\\"salesRuleId\\\":100042},{\\\"skuId\\\":9001394,\\\"salesRuleId\\\":110038,\\\"quantity\\\":2}],\\\"undefined\\\":[]}\"\n}")" target="_blank" rel="external">UIWebView:保存cookie</a></p>
+<p> <a href="javascript: window.webkit.messageHandlers.joyrun_updateCookie.postMessage("{\"ypcookieUserInfo\":\"{\\\"address\\\":{\\\"province\\\":\\\"北京\\\",\\\"district\\\":\\\"东城区\\\",\\\"address\\\":\\\"ss\\\",\\\"zipcode\\\":\\\"\\\",\\\"country\\\":\\\"\\\",\\\"city\\\":\\\"北京\\\"},\\\"name\\\":\\\"s\\\",\\\"phone\\\":\\\"s\\\"}\",\"ypcookie\":\"sid=3515ddc3bde7578304d4117ae8738161&uid=11312068\",\"ypcookieShoppingCart\":\"{\\\"22\\\":[{\\\"type\\\":1,\\\"skuId\\\":9001208,\\\"quantity\\\":3,\\\"salesRuleId\\\":100040},{\\\"type\\\":1,\\\"skuId\\\":9001210,\\\"quantity\\\":1,\\\"salesRuleId\\\":100042},{\\\"skuId\\\":9001394,\\\"salesRuleId\\\":110038,\\\"quantity\\\":2}],\\\"undefined\\\":[]}\"\n}")" target="_blank" rel="external">WKWebView:保存cookie</a></p>
+
+
+
+<br>
+	<h2>原生URL</h2>
+	<p>1. 打开马拉松详情</p>
+	<p><a href="joyrun://www.thejoyrun.com/marathon?id=29" target="_blank" rel="external">joyrun://www.thejoyrun.com/marathon?id=29</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fmarathon%3fid%3d29" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fmarathon%3fid%3d29</a></p>
+	
+	<p>2. 开始跑步页面</p>
+	<p><a href="joyrun://www.thejoyrun.com/startrun" target="_blank" rel="external">joyrun://www.thejoyrun.com/startrun</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fstartrun" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fstartrun</a></p>
+	
+		<p>3. 用户信息</p>
+	<p><a href="joyrun://www.thejoyrun.com/user?uid=446428" target="_blank" rel="external">joyrun://www.thejoyrun.com/user?uid=446428</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fuser%3fuid%3d446428" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fuser%3fuid%3d446428</a></p>
+	
+			<p>4. 跑步记录</p>
+	<p><a href="joyrun://www.thejoyrun.com/record?fid=27842655&type=7&uid=446428" target="_blank" rel="external">joyrun://www.thejoyrun.com/record?fid=27842655&type=7&uid=446428</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2frecord%3ffid%3d27842655%26type%3d7%26uid%3d446428" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2frecord%3ffid%3d27842655%26type%3d7%26uid%3d446428</a></p>
+	
+				<p>5. 悦跑说</p>
+	<p><a href="joyrun://www.thejoyrun.com/joyruntalk?article_id=206" target="_blank" rel="external">joyrun://www.thejoyrun.com/joyruntalk?article_id=206</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fjoyruntalk%3farticle_id%3d206" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fjoyruntalk%3farticle_id%3d206</a></p>
+	
+	
+				<p>6. 跑团</p>
+	<p><a href="joyrun://www.thejoyrun.com/crew?crewid=10133" target="_blank" rel="external">joyrun://www.thejoyrun.com/crew?crewid=10133</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fcrew%3fcrewid%3d10133" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fcrew%3fcrewid%3d10133</a></p>
+		
+				<p>7. 跑鞋</p>
+	<p><a href="joyrun://www.thejoyrun.com/shoe?shoe_id=101" target="_blank" rel="external">joyrun://www.thejoyrun.com/shoe?shoe_id=101</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fshoe%3fshoe_id%3d101" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fshoe%3fshoe_id%3d101</a></p>
+		
+				<p>8. 挑战</p>
+	<p><a href="joyrun://www.thejoyrun.com/challenge?cid=97" target="_blank" rel="external">joyrun://www.thejoyrun.com/challenge?cid=97</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fchallenge%3fcid%3d97" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fchallenge%3fcid%3d97</a></p>
+		
+				<p>9. 内部浏览器打开网页</p>
+	<p><a href="joyrun://www.thejoyrun.com/web?url=http%3a%2f%2fbaidu.com" target="_blank" rel="external">joyrun://www.thejoyrun.com/web?url=http%3a%2f%2fbaidu.com</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fweb%3furl%3dhttp%253a%252f%252fbaidu.com" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fweb%3furl%3dhttp%253a%252f%252fbaidu.com</a></p>
+	
+
+
+			<p>10. 打开热门话题</p>
+	<p><a href="joyrun://www.thejoyrun.com/hot_topic?topic_name=跑步不说谎" target="_blank" rel="external">joyrun://www.thejoyrun.com/hot_topic?topic_name=跑步不说谎</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fhot_topic%3ftopic_name%3d%e8%b7%91%e6%ad%a5%e4%b8%8d%e8%af%b4%e8%b0%8e" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fhot_topic%3ftopic_name%3d%e8%b7%91%e6%ad%a5%e4%b8%8d%e8%af%b4%e8%b0%8e</a></p>
+	
+
+			<p>11. 打开客服</p>
+	<p><a href="joyrun://www.thejoyrun.com/startCustomerServiceChat" target="_blank" rel="external">joyrun://www.thejoyrun.com/startCustomerServiceChat</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fstartCustomerServiceChat" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fstartCustomerServiceChat</a></p>
+	
+
+
+			<p>12. 打开发现跑团</p>
+	<p><a href="joyrun://www.thejoyrun.com/discover_crew" target="_blank" rel="external">joyrun://www.thejoyrun.com/discover_crew</a></p>
+	<p><a href="http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fdiscover_crew" target="_blank" rel="external">http://php.test.thejoyrun.com/test/test3.php?joyrun_extra=joyrun%3a%2f%2fwww.thejoyrun.com%2fdiscover_crew</a></p>
+	
+
+	<p>单纯打开悦跑圈</p>
+	<a href="joyrun://www.thejoyrun.com/main" target="_blank" rel="external">joyrun://www.thejoyrun.com/main</a>
+</body>
+</html>
+
+            </div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                            <a href="/tags/#我的开源项目" title="我的开源项目" rel="2">我的开源项目</a>
+                            
+                        
+                            
+                            <a href="/tags/#Android" title="Android" rel="6">Android</a>
+                            
+                        
+                            
+                            <a href="/tags/#其它" title="其它" rel="3">其它</a>
+                            
+                        
+                            
+                        
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+
+                        
+                            <img src="/img/avatar.png" />
+                        
+
+                        
+                            <p>悦跑圈技术团队</p>
+                        
+
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+
+                            
+                                <li>
+                                    <a target="_blank" href="http://weibo.com/thejoyrun">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+
+                            
+
+                            
+                                <li>
+                                    <a target="_blank"  href="https://github.com/joyrun">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+                            
+                            
+                            
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.thejoyrun.com" target="_blank">悦跑圈APP</a></li>
+                    
+                        <li><a href="http://www.taoweiji.cn" target="_blank">Wiki&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/thejoyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/joyrun">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 悦跑圈技术团队 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://joyrun.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'a6affd6cc8513aa057d6bc8d1b269a2e';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="https://joyrun.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
