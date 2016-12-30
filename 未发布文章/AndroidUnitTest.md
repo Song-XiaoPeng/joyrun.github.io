@@ -46,19 +46,19 @@ public class Compute {
 
 在类名处右击鼠标，选择`Go To`  >  `Test` 或者直接使用快捷键
 
-![](AndroidUnitTest/junit_1.png)
+![](junit_1.png)
 
 点击`Created New Test…`，单元测试的框架有好多种，最常用的是JUnit3和JUnit4，androidTest只支持JUnit3，而JVM两者都支持。
 
-![](AndroidUnitTest/junit_2.png)
+![](junit_2.png)
 
 点击ok后会弹出选择创建测试用例的目录，这里有两个选择，androidTest和test，androidTest是运行在Android设备上测试的，test是在jvm上进行测试。我们这里选择test。点击ok，就会在src/test文件夹生成一个单元测试类，项目大体的结构如下：
 
-![](AndroidUnitTest/junit_3.png)
+![](junit_3.png)
 
 右击ComputeTest文件，点击`Run 'ComputeTest'`即可运行这个单元测试。
 
-![](AndroidUnitTest/junit_4.png)
+![](junit_4.png)
 
 到这里，第一个单元测试就已经完成了，从上图可以看到，1+3我们预测结果是3，实际上是4，所以这个单元测试不通过。
 

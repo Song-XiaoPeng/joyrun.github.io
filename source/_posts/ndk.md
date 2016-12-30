@@ -190,7 +190,7 @@ public class Main {
 
 
 
-#### 3. 在ANDROID项目中使用NDK
+#### 3. 在ANDROID项目中使用JNI
 
 Android的JNI开发，C++文件必须编写在独立的module里面，Java接口代码可以编写在app(module)，也可以和C++放在同一个module，通过gradle关联。详细代码请自行下载demo浏览
 ```
